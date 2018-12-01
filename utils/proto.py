@@ -34,4 +34,6 @@ print("train_images; len: {}, type: {}, shape {}".format(
     type(train_loader),
     train_loader))
 
+print("Modified file to check git commit")
+
 
