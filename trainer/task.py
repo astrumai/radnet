@@ -40,11 +40,43 @@ if __name__ == '__main__' and __package__ is None:
                         type=int
                         )
 
-    parser.add_argument('--transform',
+    parser.add_argument('--depth',
+                        default=5,
+                        type=int,
+                        help='Number of downsampling/upsampling blocks'
+                        )
+
+    parser.add_argument('--n_classes',
+                        default=2,
+                        type=int,
+                        help='Number of classes in the dataset'
+                        )
+
+    parser.add_argument('--up_mode',
+                        choices=['upconv, upsample'],
+                        default='upsample',
+                        type=str,
+                        help='Type of upsampling'
+                        )
+
+    parser.add_argument('--augment',
                         choices=['yes, no'],
                         default='yes',
                         type=str,
-                        help=' Whether to add transformations to the images'
+                        help='Whether to augment the train images or not'
+                        )
+
+    parser.add_argument('--augment_type',
+                        choices=['geometric, brightness, both'],
+                        default='geometric',
+                        type=str,
+                        help='Which type of augmentation to choose from: geometric, brightness or both'
+                        )
+
+    parser.add_argument('--test_size',
+                        default=0.2,
+                        type=int,
+                        help='Validation size to split the data, should be in between 0.0 to 1.0'
                         )
 
     args = parser.parse_args()
