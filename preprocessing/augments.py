@@ -29,6 +29,13 @@ def deconverter(image, mask):
     return tensor_image, tensor_mask
 
 
+def normalize(image):
+    """Need to normalize and round the output to 4 decimal points to match with validation data set"""
+    norm_image = cv2.normalize(image, image.shape, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+    round_num = np.around(norm_image, 4)
+    return round_num
+
+
 def rotation_transforms(image, mask, angle=0):
     height, width = image.shape[1:]
     cc = np.cos(angle / 180 * np.pi)
@@ -52,10 +59,16 @@ def rotation_transforms(image, mask, angle=0):
                                 flags=cv2.INTER_LINEAR,
                                 borderMode=cv2.BORDER_REFLECT_101,
                                 borderValue=(0, 0, 0,))
+    # normalizing the images
+    image = normalize(image)
+
     mask = cv2.warpPerspective(arr_mask, mat, (width, height),
                                flags=cv2.INTER_NEAREST,
                                borderMode=cv2.BORDER_REFLECT_101,
                                borderValue=(0, 0, 0,))
+    # normalizing the masks
+    mask = normalize(mask)
+
     # convert the nd array to tensor
     tensor_image, tensor_mask = deconverter(image, mask)
     return tensor_image, tensor_mask
@@ -121,10 +134,15 @@ def elastic_transform(image, mask, grid=10, distort=0.2):
                       interpolation=cv2.INTER_LINEAR,
                       borderMode=cv2.BORDER_REFLECT_101,
                       borderValue=(0, 0, 0,))
+    # normalizing the images
+    image = normalize(image)
+
     mask = cv2.remap(arr_mask, map_x, map_y,
                      interpolation=cv2.INTER_NEAREST,
                      borderMode=cv2.BORDER_REFLECT_101,
                      borderValue=(0, 0, 0,))
+    # normalizing the masks
+    mask = normalize(mask)
 
     # convert the nd array to tensor
     tensor_image, tensor_mask = deconverter(image, mask)
@@ -198,7 +216,7 @@ class GammaChange(object):
         return data
 
 
-def augmentations(train, args):
+def augmentations(train):
     """Augmentations for the input images
     Note:
 
@@ -208,21 +226,22 @@ def augmentations(train, args):
 
     Returns:
     """
+    augment_type = 'geometric'
 
-    if args.augment_type == 'geometric':
+    if augment_type == 'geometric':
         geometric_transforms = Compose([Rotation(max_angle=15),
                                         ElasticDeformation(max_distort=0.15)])
 
         return geometric_transforms(train)
 
-    elif args.augment_type == 'brightness':
+    elif augment_type == 'brightness':
         bright_transforms = Compose([BrightnessShift(max_value=0.1),
                                     BrightnessScaling(max_value=0.08),
                                     GammaChange(max_value=0.08)])
 
         return bright_transforms(train)
 
-    elif args.augment_type == 'both':
+    elif augment_type == 'both':
         both_transforms = Compose([Rotation(max_angle=15),
                                    ElasticDeformation(max_distort=0.15),
                                    BrightnessShift(max_value=0.1),

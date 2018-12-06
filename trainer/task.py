@@ -8,7 +8,7 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
     # __package__ = "UnetWork.trainer"
 
-    from ..trainer import train
+    from trainer import train
 
     """ 
     Parse the arguments.
