@@ -1,13 +1,16 @@
-from preprocessing.load import DataTransformer, sampler
-from preprocessing.augments import augmentations
+from preprocessing.load import DataTransformer
 from model.u_net import UNet
+from torch.utils.data.sampler import RandomSampler, SequentialSampler
 import os
 from torchvision.transforms import Compose, Resize, ToTensor
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 import torch
 from torch.optim import Adam
+from preprocessing.augments import augmentations
+
 from sklearn.model_selection import train_test_split
+import numpy as np
 
 import tifffile as tiff
 from torchsummary import summary
@@ -25,54 +28,47 @@ logging.basicConfig(filename='train.log', level=logging.INFO,
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def split_data(dataset, args):
-    """A function to split the data
-    Arguments:
-        dataset:
-        args:
-    Returns:
-        List containing train-test split of inputs.
-    """
-    train_data, val_data = train_test_split(dataset, test_size=args.test_size, shuffle=True)
-
-    return train_data, val_data
-
-
 def train(args):
     """ Contains the training loop"""
 
     # get data set file path
-    train_path = os.path.join(args.root_dir, 'data', 'train-volume.tif')
+    data_path = os.path.join(args.root_dir, 'data', 'train-volume.tif')
     labels_path = os.path.join(args.root_dir, 'data', 'train-labels.tif')
 
-    # transforming the train data and returning a 4D tensor
-    data = Compose([Resize(args.image_size), ToTensor()])
-    data_transform = DataTransformer(train_path, labels_path, data)
-
-    # split the data into train and validation set
-    train_data, val_data = split_data(data_transform, args)
+    # compose the transforms for the train set
+    train_data = Compose([Resize(args.image_size), ToTensor()])
 
     # choose between augmentations for train data
     if args.augment == 'yes':
-        # calling the augmentations
-        train_augment = augmentations(train_data, args)
-        train_samples = sampler(train_augment)
+        train_augment = augmentations()
+        train_transform = DataTransformer(data_path, labels_path,
+                                          image_transform=train_data, image_augmentation=train_augment)
 
     elif args.augment == 'no':
         # transforming the train data and returning a 4D tensor
-        train_samples = sampler(train_data)
+        train_transform = DataTransformer(data_path, labels_path,
+                                          image_transform=train_data, image_augmentation=None)
 
-    # use the random sampler to sample train and validation data into the train data loader
-    val_samples = sampler(val_data)
+    # transform for validation data
+    val_data = Compose([Resize(args.image_size), ToTensor()])
+    val_transform = DataTransformer(data_path, labels_path,
+                                    image_transform=val_data, image_augmentation=None)
+
+    # split the train and validation indices
+    train_indices, validation_indices = train_test_split(range(len(train_transform)), test_size=0.15)
+
+    # call the sampler for the train and validation data
+    train_samples = RandomSampler(train_indices)
+    validation_samples = SequentialSampler(validation_indices)
 
     # load train and validation data
-    train_loader = DataLoader(train_augment,
-                              args.batch_size,
+    train_loader = DataLoader(train_transform,
+                              batch_size=args.batch_size,
                               sampler=train_samples)
 
-    val_loader = DataLoader(val_data,
-                            args.batch_size,
-                            sampler=val_samples)
+    val_loader = DataLoader(val_transform,
+                            batch_size=args.batch_size,
+                            sampler=validation_samples)
 
     # create the model
     model = UNet(in_channels=1,
