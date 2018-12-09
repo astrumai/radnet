@@ -67,7 +67,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--augment_type',
-                        choices=['geometric, brightness, both'],
+                        choices=['geometric, image, both'],
                         default='geometric',
                         type=str,
                         help='Which type of augmentation to choose from: geometric, brightness or both'
