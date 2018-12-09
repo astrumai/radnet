@@ -1,222 +1,284 @@
 from torchvision.transforms import *
 import numpy as np
+from scipy.ndimage.filters import gaussian_filter
+from functools import wraps
 import torch
 import cv2
 
-
-def converter(image, mask):
-    """converts the torch tensor to a pil image and then an array"""
-
-    pil_image = ToPILImage()(image)
-    arr_image = np.asarray(pil_image)
-
-    pil_mask = ToPILImage()(mask)
-    arr_mask = np.asarray(pil_mask)
-
-    return arr_image, arr_mask
+MAX_VALUES_BY_DTYPE = {
+    np.dtype('uint8'): 255,
+    np.dtype('uint16'): 65535,
+    np.dtype('uint32'): 4294967295,
+    np.dtype('float32'): 1.0,
+}
 
 
-def deconverter(image, mask):
-    """converts the array to torch tensor"""
-
-    tensor_image = torch.from_numpy(image)
-    tensor_image.unsqueeze_(0)
-    tensor_image = tensor_image.expand(1, 64, 64)
-    tensor_mask = torch.from_numpy(mask)
-    tensor_mask.unsqueeze_(0)
-    tensor_mask = tensor_mask.expand(1, 64, 64)
-
-    return tensor_image, tensor_mask
+def clip(img, dtype, maxval):
+    return np.clip(img, 0, maxval).astype(dtype)
 
 
-def normalize(image):
-    """Need to normalize and round the output to 4 decimal points to match with validation data set"""
-    norm_image = cv2.normalize(image, image.shape, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-    round_num = np.around(norm_image, 4)
-    return round_num
+def preserve_shape(func):
+    """Preserve shape of the image"""
+
+    @wraps(func)
+    def wrapped_function(img, *args, **kwargs):
+        shape = img.shape
+        result = func(img, *args, **kwargs)
+        result = result.reshape(shape)
+        return result
+
+    return wrapped_function
 
 
-def rotation_transforms(image, mask, angle=0):
-    height, width = image.shape[1:]
-    cc = np.cos(angle / 180 * np.pi)
-    ss = np.sin(angle / 180 * np.pi)
-    rotate_matrix = np.array([[cc, -ss], [ss, cc]])
+def clipped(func):
+    """ """
 
-    box0 = np.array([[0, 0], [width, 0], [width, height], [0, height], ], np.float32)
-    box1 = box0 - np.array([width / 2, height / 2])
-    box1 = np.dot(box1, rotate_matrix.T) + np.array([width / 2, height / 2])
+    @wraps(func)
+    def wrapped_function(img, *args, **kwargs):
+        dtype = img.dtype
+        maxval = MAX_VALUES_BY_DTYPE.get(dtype, 1.0)
+        return clip(func(img, *args, **kwargs), dtype, maxval)
 
-    box0 = box0.astype(np.float32)
-    box1 = box1.astype(np.float32)
-    # calculates a perspective transform from four pairs of the corresponding points
-    mat = cv2.getPerspectiveTransform(box0, box1)
-
-    # calling the converter
-    arr_image, arr_mask = converter(image, mask)
-
-    # applies the perspective transformation to the image and the mask
-    image = cv2.warpPerspective(arr_image, mat, (width, height),
-                                flags=cv2.INTER_LINEAR,
-                                borderMode=cv2.BORDER_REFLECT_101,
-                                borderValue=(0, 0, 0,))
-    # normalizing the images
-    image = normalize(image)
-
-    mask = cv2.warpPerspective(arr_mask, mat, (width, height),
-                               flags=cv2.INTER_NEAREST,
-                               borderMode=cv2.BORDER_REFLECT_101,
-                               borderValue=(0, 0, 0,))
-    # normalizing the masks
-    mask = normalize(mask)
-
-    # convert the nd array to tensor
-    tensor_image, tensor_mask = deconverter(image, mask)
-    return tensor_image, tensor_mask
+    return wrapped_function
 
 
-class Rotation(object):
-    """ Do rotations
+@preserve_shape
+def gamma_transform(img, gamma):
+    if img.dtype == np.uint8:
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
+        img = cv2.LUT(img, table)
+    else:
+        img = np.power(img, gamma)
+    return img
 
+
+@clipped
+def brightness_contrast_adjust(img, alpha=1, beta=0):
+    img = img.astype('float32') * alpha + beta * np.mean(img)
+    return img
+
+
+@preserve_shape
+def grid_distortion(image, num_steps=10, xsteps=[], ysteps=[], interpolation=cv2.INTER_LINEAR,
+                    border_mode=cv2.BORDER_REFLECT_101):
     """
+    :param image:
+    :param num_steps:
+    :param xsteps:
+    :param ysteps:
+    :param interpolation:
+    :param border_mode:
+    :return:
+    """
+    height, width = image.shape[:2]
 
-    def __init__(self, max_angle):
-        self.max_angle = max_angle
-
-    def __call__(self, data):
-        angle = np.random.uniform(-self.max_angle, self.max_angle)
-
-        for i in range(len(data)):
-            img, mask = rotation_transforms(data[i][0], data[i][1], angle)
-            data[i][0] = img
-            data[i][1] = mask
-        return data
-
-
-def elastic_transform(image, mask, grid=10, distort=0.2):
-    height, width = image.shape[1:]
-    x_step = int(grid)
+    x_step = width // num_steps
     xx = np.zeros(width, np.float32)
     prev = 0
-    for x in range(0, width, x_step):
+    for i, x in enumerate(range(0, width, x_step)):
         start = x
         end = x + x_step
         if end > width:
             end = width
             cur = width
         else:
-            cur = prev + x_step * (1 + np.random.uniform(-distort, distort))
+            cur = prev + x_step * xsteps[i]
+
         xx[start:end] = np.linspace(prev, cur, end - start)
         prev = cur
 
-    y_step = int(grid)
+    y_step = height // num_steps
     yy = np.zeros(height, np.float32)
     prev = 0
-    for y in range(0, height, y_step):
+    for i, y in enumerate(range(0, height, y_step)):
         start = y
         end = y + y_step
         if end > height:
             end = height
             cur = height
         else:
-            cur = prev + y_step * (1 + np.random.uniform(-distort, distort))
+            cur = prev + y_step * ysteps[i]
 
         yy[start:end] = np.linspace(prev, cur, end - start)
         prev = cur
-    # grid
+
     map_x, map_y = np.meshgrid(xx, yy)
     map_x = map_x.astype(np.float32)
     map_y = map_y.astype(np.float32)
+    image = cv2.remap(image, map_x, map_y, interpolation=interpolation, borderMode=border_mode)
 
-    # calling the converter
-    arr_image, arr_mask = converter(image, mask)
-
-    image = cv2.remap(arr_image, map_x, map_y,
-                      interpolation=cv2.INTER_LINEAR,
-                      borderMode=cv2.BORDER_REFLECT_101,
-                      borderValue=(0, 0, 0,))
-    # normalizing the images
-    image = normalize(image)
-
-    mask = cv2.remap(arr_mask, map_x, map_y,
-                     interpolation=cv2.INTER_NEAREST,
-                     borderMode=cv2.BORDER_REFLECT_101,
-                     borderValue=(0, 0, 0,))
-    # normalizing the masks
-    mask = normalize(mask)
-
-    # convert the nd array to tensor
-    tensor_image, tensor_mask = deconverter(image, mask)
-
-    return tensor_image, tensor_mask
+    return image
 
 
-class ElasticDeformation(object):
-    """ Do Elastic Transformations
+@preserve_shape
+def elastic_transform_fast(image, alpha, sigma, alpha_affine, interpolation=cv2.INTER_LINEAR,
+                           border_mode=cv2.BORDER_REFLECT_101, random_state=None):
+    """
+    :param image:
+    :param alpha:
+    :param sigma:
+    :param alpha_affine:
+    :param interpolation:
+    :param border_mode:
+    :param random_state:
+    :return:
+    """
+    if random_state is None:
+        random_state = np.random.RandomState(1234)
+
+    height, width = image.shape[:2]
+
+    # Random affine
+    center_square = np.float32((height, width)) // 2
+    square_size = min((height, width)) // 3
+    alpha = float(alpha)
+    sigma = float(sigma)
+    alpha_affine = float(alpha_affine)
+
+    pts1 = np.float32([center_square + square_size, [center_square[0] + square_size, center_square[1] - square_size],
+                       center_square - square_size])
+    pts2 = pts1 + random_state.uniform(-alpha_affine, alpha_affine, size=pts1.shape).astype(np.float32)
+    matrix = cv2.getAffineTransform(pts1, pts2)
+
+    image = cv2.warpAffine(image, matrix, (width, height), flags=interpolation, borderMode=border_mode)
+
+    dx = np.float32(gaussian_filter((random_state.rand(height, width) * 2 - 1), sigma) * alpha)
+    dy = np.float32(gaussian_filter((random_state.rand(height, width) * 2 - 1), sigma) * alpha)
+
+    x, y = np.meshgrid(np.arange(width), np.arange(height))
+
+    mapx = np.float32(x + dx)
+    mapy = np.float32(y + dy)
+
+    return cv2.remap(image, mapx, mapy, interpolation, borderMode=border_mode)
+
+
+class DualTransform(object):
+    @property
+    def targets(self):
+        return {'image': self.apply, 'mask': self.apply_to_mask}
+
+    def apply(self, img, **params):
+        raise NotImplementedError
+
+    def apply_to_mask(self, img, **params):
+        return self.apply(img, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
+
+
+class ImageOnlyTransform(object):
+    @property
+    def targets(self):
+        return {'image': self.apply}
+
+    def apply(self, img, **params):
+        raise NotImplementedError
+
+
+class GammaChange(ImageOnlyTransform):
+    """
+    Arguments:
+
+    Returns:
+    """
+
+    def __init__(self, gamma_limit=(80, 120)):
+        self.gamma_limit = gamma_limit
+
+    def apply(self, img, gamma=1, **params):
+        return gamma_transform(img, gamma=gamma)
+
+
+class BrightnessContrast(ImageOnlyTransform):
+    """Randomly change brightness and contrast of the input image
+    Arguments:
+
+    Returns:
+    """
+
+    def __init__(self, brightness_limit=0.2, contrast_limit=0.2):
+        self.brightness_limit = brightness_limit
+        self.contrast_limit = contrast_limit
+
+    def apply(self, img, alpha=1, beta=0, **params):
+        return brightness_contrast_adjust(img, alpha, beta)
+
+
+class GridDistortion(DualTransform):
+    """
+    Arguments:
+
+    Returns:
+    """
+
+    def __init__(self, num_steps=5, distort_limit=0.3, interpolation=cv2.INTER_LINEAR,
+                 border_mode=cv2.BORDER_REFLECT_101):
+        self.num_steps = num_steps
+        self.distort_limit = distort_limit
+        self.interpolation = interpolation
+        self.border_mode = border_mode
+
+    def apply(self, img, stepsx=[], stepsy=[], interpolation=cv2.INTER_LINEAR,
+              border_mode=cv2.BORDER_REFLECT_101, **params):
+        return grid_distortion(img, self.num_steps, stepsx, stepsy, interpolation, self.border_mode)
+
+
+class ElasticTransform(DualTransform):
+    """
 
     """
 
-    def __init__(self, grid=10, max_distort=0.15):
-        self.grid = grid
-        self.max_distort = max_distort
+    def __init__(self, alpha, sigma=50, alpha_affine=50, interpolation=cv2.INTER_LINEAR,
+                 border_mode=cv2.BORDER_REFLECT_101):
+        self.alpha = alpha
+        self.alpha_affine = alpha_affine
+        self.sigma = sigma
+        self.interpolation = interpolation
+        self.border_mode = border_mode
 
-    def __call__(self, data):
-        distort = np.random.uniform(0, self.max_distort)
-        for i in range(len(data)):
-            img, mask = elastic_transform(data[i][0], data[i][1], self.grid, distort)
-            data[i][0] = img
-            data[i][1] = mask
-        return data
+    def apply(self, img, random_state=None, interpolation=cv2.INTER_LINEAR, **params):
+        return elastic_transform_fast(img, self.alpha, self.sigma, self.alpha_affine, interpolation,
+                                      self.border_mode, np.random.RandomState(random_state))
 
 
-class BrightnessShift(object):
+class Rotate90(DualTransform):
+    """Randomly rotate the input by 90 degrees zero or more times
+    Arguments:
+
+    Returns:
     """
 
-    """
-
-    def __init__(self, max_value=0.1):
-        self.max_value = max_value
-
-    def __call__(self, data):
-        for i in range(len(data)):
-            img = data[i][0]
-            img += np.random.uniform(-self.max_value, self.max_value)
-            data[i][0] = np.clip(img, 0, 1)
-        return data
+    def apply(self, img, factor=0, **params):
+        factor = np.random.randint(0, 3)
+        return np.ascontiguousarray(np.rot90(img, factor))
 
 
-class BrightnessScaling(object):
-    """
+class HorizontalFlip(DualTransform):
+    """Flip the input horizontally around the y-axis
+    Arguments:
 
-    """
-
-    def __init__(self, max_value=0.08):
-        self.max_value = max_value
-
-    def __call__(self, data):
-        for i in range(len(data)):
-            img = data[i][0]
-            img *= np.random.uniform(1 - self.max_value, 1 + self.max_value)
-            data[i][0] = np.clip(img, 0, 1)
-        return data
-
-
-class GammaChange(object):
-    """
+    Returns:
 
     """
 
-    def __init__(self, max_value=0.08):
-        self.max_value = max_value
-
-    def __call__(self, data):
-        for i in range(len(data)):
-            img = data[i][0]
-            img = img ** (1.0 / np.random.uniform(1 - self.max_value, 1 + self.max_value))
-            data[i][0] = np.clip(img, 0, 1)
-        return data
+    def apply(self, img, **params):
+        return np.ascontiguousarray(img[:, ::-1, ...])
 
 
-def augmentations(train):
+class VerticalFlip(DualTransform):
+    """Flip the input vertically around the x-axis
+    Arguments:
+
+
+    Returns:
+
+    """
+
+    def apply(self, img, **params):
+        return np.ascontiguousarray(img[::-1, ...])
+
+
+def augmentations():
     """Augmentations for the input images
     Note:
 
@@ -227,25 +289,29 @@ def augmentations(train):
     Returns:
     """
     augment_type = 'geometric'
-
+    transform_prob = 0.5
     if augment_type == 'geometric':
-        geometric_transforms = Compose([Rotation(max_angle=15),
-                                        ElasticDeformation(max_distort=0.15)])
+        geometric_transforms = Compose([VerticalFlip(),
+                                        HorizontalFlip(),
+                                        Rotate90(),
+                                        RandomApply([ElasticTransform()], p=transform_prob),
+                                        RandomApply([GridDistortion()], p=transform_prob)])
 
-        return geometric_transforms(train)
+        return geometric_transforms
 
-    elif augment_type == 'brightness':
-        bright_transforms = Compose([BrightnessShift(max_value=0.1),
-                                    BrightnessScaling(max_value=0.08),
-                                    GammaChange(max_value=0.08)])
+    elif augment_type == 'image':
+        bright_transforms = Compose([RandomApply([BrightnessContrast()], p=transform_prob),
+                                     RandomApply([GammaChange()], p=transform_prob)])
 
-        return bright_transforms(train)
+        return bright_transforms
 
     elif augment_type == 'both':
-        both_transforms = Compose([Rotation(max_angle=15),
-                                   ElasticDeformation(max_distort=0.15),
-                                   BrightnessShift(max_value=0.1),
-                                   BrightnessScaling(max_value=0.08),
-                                   GammaChange(max_value=0.08)])
+        both_transforms = Compose([VerticalFlip(),
+                                   HorizontalFlip(),
+                                   Rotate90(),
+                                   RandomApply([ElasticTransform()], p=transform_prob),
+                                   RandomApply([GridDistortion()], p=transform_prob),
+                                   RandomApply([BrightnessContrast()], p=transform_prob),
+                                   RandomApply([GammaChange()], p=transform_prob)])
 
-        return both_transforms(train)
+        return both_transforms
