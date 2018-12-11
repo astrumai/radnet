@@ -1,6 +1,6 @@
 import os
 from torchvision.transforms import Compose, Resize, ToTensor
-from preprocessing.load import DataTransformer
+from processing.load import DataTransformer
 from torch.utils.data import DataLoader
 import torch
 from utils.helpers import pred_to_numpy

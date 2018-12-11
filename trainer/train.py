@@ -1,4 +1,4 @@
-from preprocessing.load import DataTransformer
+from processing.load import DataTransformer
 from model.u_net import UNet
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
 import os
@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torch import nn
 import torch
 from torch.optim import Adam
-from preprocessing.augments import augmentations
+from processing.augments import augmentations
 from sklearn.model_selection import train_test_split
 from utils.helpers import pred_to_numpy, to_numpy
 from utils.metrics import dice

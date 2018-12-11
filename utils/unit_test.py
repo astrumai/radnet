@@ -1,9 +1,9 @@
 import unittest
-from preprocessing.augments import *
+from processing.augments import *
 import numpy as np
-from preprocessing.augments import VerticalFlip
+from processing.augments import VerticalFlip
 import os
-from preprocessing.load import DataTransformer
+from processing.load import DataTransformer
 from torchvision.transforms import Compose, Resize, ToTensor
 from utils.helpers import convert_2d_to_target
 from utils.metrics import dice
