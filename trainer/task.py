@@ -6,7 +6,7 @@ import sys
 
 if __name__ == '__main__' and __package__ is None:
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    # __package__ = "UnetWork.trainer"
+    __package__ = "UnetWork.trainer"
 
     from trainer import train, evaluate
 
@@ -29,6 +29,12 @@ if __name__ == '__main__' and __package__ is None:
                         help='Choose between training and evaluating a trained model'
                         )
 
+    parser.add_argument('--weights_dir',
+                        default="./weights",
+                        type=str,
+                        help='Choose directory to save weights model'
+                        )
+
     parser.add_argument('--image_size',
                         default=64,
                         type=int,
@@ -42,7 +48,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--epochs',
-                        default=2,
+                        default=5,
                         type=int
                         )
 
@@ -86,6 +92,9 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     args = parser.parse_args()
+
+    if not os.path.exists(args.weights_dir):
+        os.makedirs(args.weights_dir)
 
     if args.mode == 'train':
         train.train(args)
