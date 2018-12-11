@@ -4,7 +4,6 @@ from torch.utils.data.sampler import RandomSampler, SequentialSampler
 import os
 from torchvision.transforms import Compose, Resize, ToTensor
 from torch.utils.data import DataLoader
-import torch.nn.functional as F
 from torch import nn
 import torch
 from torch.optim import Adam
@@ -13,9 +12,6 @@ from sklearn.model_selection import train_test_split
 from utils.helpers import pred_to_numpy, to_numpy
 from utils.metrics import dice
 import numpy as np
-
-import tifffile as tiff
-from torchsummary import summary
 
 ################################################################
 # setting up a logger
@@ -33,10 +29,28 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 loss_bce = nn.BCEWithLogitsLoss()
 loss_values = []
 THRESHOLD = 0.5
+best_loss = 1e10
+
+
+def save_models(model, path, epoch, optimizer, best, loss):
+
+    if best:
+        print("===> Saving a new best model at epoch {}".format(epoch))
+        save_checkpoint = ({'model': model,
+                            'optimizer': optimizer,
+                            'epoch': epoch,
+                            'best_loss': loss
+                            }, best)
+        torch.save(save_checkpoint, path+"/u_net_model.pt")
 
 
 def validate_model(model, loader, threshold):
-    """Contains the validation loop"""
+    """ Contains the validation loop
+    :param model:
+    :param loader:
+    :param threshold:
+    :return:
+    """
     model = model.eval()
     for i, data in enumerate(loader):
         val_batch, val_labels = data
@@ -56,6 +70,7 @@ def validate_model(model, loader, threshold):
 
 def train(args):
     """ Contains the training loop"""
+    global best_loss
 
     # get data set file path
     data_path = os.path.join(args.root_dir, 'data', 'train-volume.tif')
@@ -116,8 +131,12 @@ def train(args):
 
             # print the loss
             print("===> Epoch[{}]({}/{}): Loss: {:.4f}".format(e, i, len(train_loader), loss.item()))
+
         mean_dice, val_loss = validate_model(model, val_loader, threshold=THRESHOLD)
-
-        # after each epoch
-
         print("===> Epoch {} Mean Dice: {} : Validation Loss: {:.4f}".format(e, mean_dice, val_loss))
+
+        # save model with best score
+        is_best = val_loss < best_loss
+        best_loss = min(val_loss, best_loss)
+        save_models(model=model, path=args.weights_dir, epoch=e+1, optimizer=optim, best=is_best, loss=best_loss)
+
