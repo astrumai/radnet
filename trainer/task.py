@@ -8,19 +8,25 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
     # __package__ = "UnetWork.trainer"
 
-    from trainer import train
+    from trainer import train, evaluate
 
     """ 
     Parse the arguments.
     """
-    # python task.py dynamic_routing
-
     # setting the hyper parameters
     parser = argparse.ArgumentParser(description="U-Net.")
 
-    parser.add_argument('root_dir',
+    parser.add_argument('--root_dir',
+                        default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
                         type=str,
                         help='root directory'
+                        )
+
+    parser.add_argument('--mode',
+                        default="train",
+                        choices=['train', 'evaluate'],
+                        type=str,
+                        help='Choose between training and evaluating a trained model'
                         )
 
     parser.add_argument('--image_size',
@@ -41,13 +47,13 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--depth',
-                        default=5,
+                        default=3,
                         type=int,
                         help='Number of downsampling/upsampling blocks'
                         )
 
     parser.add_argument('--n_classes',
-                        default=2,
+                        default=1,
                         type=int,
                         help='Number of classes in the dataset'
                         )
@@ -61,7 +67,7 @@ if __name__ == '__main__' and __package__ is None:
 
     parser.add_argument('--augment',
                         choices=['yes, no'],
-                        default='yes',
+                        default='no',
                         type=str,
                         help='Whether to augment the train images or not'
                         )
@@ -81,10 +87,10 @@ if __name__ == '__main__' and __package__ is None:
 
     args = parser.parse_args()
 
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
-
-    train.train(args)
+    if args.mode == 'train':
+        train.train(args)
+    elif args.mode == 'evaluate':
+        evaluate.evaluate(args)
 
 
 
