@@ -1,4 +1,4 @@
-<p align="center"><img width="40%" src="logo/pytorch-logo-dark.png" /></p>
+<p align="center"><img width="40%" src="logo/Pytorch_logo.png" /></p>
 
 --------------------------------------------------------------------------------
 # U-Net
