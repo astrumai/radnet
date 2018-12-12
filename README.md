@@ -13,10 +13,13 @@ Pytorch implementation of U-Net
 
 ## (Work in Progress)
 
+The __Goal__ of the project is to develop a generalizable model to assist in the evaluation of lesions 
+(e.g. benign and malignant tumors, multiple sclerosis and cysts) in CT and MRI scans for multiple organs.
+
 Currently the code works for the ISBI Neuronal Stack Segmentation dataset.
 
 ### Future Plan
-- write the logger.py to log values
+- write the logger.py to log values and visualize in tensorboard
 - write plot.py into train and plot the logged values
 - work on augmentations (it is not working yet)
 - finish up the evaluation.py to export data
