@@ -12,15 +12,7 @@ from sklearn.model_selection import train_test_split
 from utils.helpers import pred_to_numpy, to_numpy
 from utils.metrics import dice
 import numpy as np
-
-################################################################
-# setting up a logger
-import logging
-
-logging.basicConfig(filename='train.log', level=logging.INFO,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
-
-################################################################
+from utils.logger import my_logs
 
 # CUDA for PyTorch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -33,7 +25,6 @@ best_loss = 1e10
 
 
 def save_models(model, path, epoch, optimizer, best, loss):
-
     if best:
         print("===> Saving a new best model at epoch {}".format(epoch))
         save_checkpoint = ({'model': model,
@@ -41,7 +32,7 @@ def save_models(model, path, epoch, optimizer, best, loss):
                             'epoch': epoch,
                             'best_loss': loss
                             }, best)
-        torch.save(save_checkpoint, path+"/u_net_model.pt")
+        torch.save(save_checkpoint, path + "/u_net_model.pt")
 
 
 def validate_model(model, loader, threshold):
@@ -129,14 +120,26 @@ def train(args):
             loss.backward()
             optim.step()
 
-            # print the loss
-            print("===> Epoch[{}]({}/{}): Loss: {:.4f}".format(e, i, len(train_loader), loss.item()))
-
-        mean_dice, val_loss = validate_model(model, val_loader, threshold=THRESHOLD)
-        print("===> Epoch {} Mean Dice: {} : Validation Loss: {:.4f}".format(e, mean_dice, val_loss))
+        # print the loss
+        train_dice, train_loss = validate_model(model, train_loader, threshold=THRESHOLD)
+        val_dice, val_loss = validate_model(model, val_loader, threshold=THRESHOLD)
+        print("===> Epoch {} Training Loss: {:.4f} : Mean Dice: {}".format(e, train_loss, train_dice))
+        print("===> Epoch {} Validation Loss: {:.4f} : Mean Dice: {} :".format(e, val_loss, val_dice))
 
         # save model with best score
         is_best = val_loss < best_loss
         best_loss = min(val_loss, best_loss)
-        save_models(model=model, path=args.weights_dir, epoch=e+1, optimizer=optim, best=is_best, loss=best_loss)
+        save_models(model=model, path=args.weights_dir, epoch=e + 1, optimizer=optim, best=is_best, loss=best_loss)
 
+        # log the values
+        history = my_logs(epoch=e, train_loss=train_loss, train_dice=train_dice, val_loss=val_loss, val_dice=val_dice)
+
+    print("Training values logged to train.")
+
+    # plot train values
+    if args.plotter == 'yes':
+        from utils.plot import plotter
+
+        show_plots = plotter(history)
+    elif args.plotter == 'no':
+        print("Nothing plotted")
