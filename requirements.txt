@@ -1,0 +1,8 @@
+pytorch
+tifffile
+pillow
+opencv
+scipy
+torch
+torchvision
+numpy
