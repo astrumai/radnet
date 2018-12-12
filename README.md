@@ -1,3 +1,6 @@
+<p align="center"><img width="40%" src="logo/Pytorch_logo.png" /></p>
+
+--------------------------------------------------------------------------------
 # U-Net
 Pytorch implementation of U-Net
 
