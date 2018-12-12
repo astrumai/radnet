@@ -33,6 +33,12 @@ if __name__ == '__main__' and __package__ is None:
                         help='Choose directory to save weights model'
                         )
 
+    parser.add_argument('--log_dir',
+                        default="./train_logs",
+                        type=str,
+                        help='Choose directory to save the logs'
+                        )
+
     parser.add_argument('--image_size',
                         default=64,
                         type=int,
@@ -89,10 +95,20 @@ if __name__ == '__main__' and __package__ is None:
                         help='Validation size to split the data, should be in between 0.0 to 1.0'
                         )
 
+    parser.add_argument('--log',
+                        default='yes',
+                        choices=['yes', 'no'],
+                        type=str,
+                        help='Log the Values'
+                        )
+
     args = parser.parse_args()
 
     if not os.path.exists(args.weights_dir):
         os.makedirs(args.weights_dir)
+
+    if not os.path.exists(args.log_dir):
+        os.makedirs(args.log_dir)
 
     if args.mode == 'train':
         train.train(args)
