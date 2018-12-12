@@ -14,6 +14,7 @@ from trainer.evaluate import validate_model
 from visualize.plot import plotter
 from visualize.logger import Logger
 
+
 # CUDA for PyTorch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
