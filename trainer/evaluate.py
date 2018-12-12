@@ -36,8 +36,7 @@ def evaluate(args):
         re_labels = labels.reshape((64, 64))
         pred_list.append(re_labels)
 
-    # get the labels for the predictions
-    print("predictions {}".format(len(pred_list)))
+    # save the predictions
+    print("predictions complete")
 
-    # print("type {}, length {}, shape {}".format(type(labels), len(labels[0][0]), labels.shape))
 
