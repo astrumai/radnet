@@ -9,10 +9,10 @@ import torch
 from torch.optim import Adam
 from processing.augments import augmentations
 from sklearn.model_selection import train_test_split
-from utils.helpers import pred_to_numpy, to_numpy
-from utils.metrics import dice
-import numpy as np
-from utils.logger import my_logs
+from visualize.logger import save_models
+from trainer.evaluate import validate_model
+from visualize.plot import plotter
+from visualize.logger import Logger
 
 # CUDA for PyTorch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -22,41 +22,6 @@ loss_bce = nn.BCEWithLogitsLoss()
 loss_values = []
 THRESHOLD = 0.5
 best_loss = 1e10
-
-
-def save_models(model, path, epoch, optimizer, best, loss):
-    if best:
-        print("===> Saving a new best model at epoch {}".format(epoch))
-        save_checkpoint = ({'model': model,
-                            'optimizer': optimizer,
-                            'epoch': epoch,
-                            'best_loss': loss
-                            }, best)
-        torch.save(save_checkpoint, path + "/u_net_model.pt")
-
-
-def validate_model(model, loader, threshold):
-    """ Contains the validation loop
-    :param model:
-    :param loader:
-    :param threshold:
-    :return:
-    """
-    model = model.eval()
-    for i, data in enumerate(loader):
-        val_batch, val_labels = data
-        val_batch, val_labels = val_batch.to(device), val_labels.to(device)
-
-        # call the u-net module
-        prediction = model(val_batch)
-
-        # call the loss function
-    loss = loss_bce(prediction, val_labels)
-    pred_labels, true_labels = pred_to_numpy(prediction) > threshold, to_numpy(val_labels) > threshold
-    dices = []
-    for _pred, _labels in zip(pred_labels, true_labels):
-        dices.append(dice(_pred, _labels))
-    return np.array(dices).mean(), loss.detach().cpu().numpy()
 
 
 def train(args):
@@ -123,23 +88,22 @@ def train(args):
         # print the loss
         train_dice, train_loss = validate_model(model, train_loader, threshold=THRESHOLD)
         val_dice, val_loss = validate_model(model, val_loader, threshold=THRESHOLD)
-        print("===> Epoch {} Training Loss: {:.4f} : Mean Dice: {}".format(e, train_loss, train_dice))
-        print("===> Epoch {} Validation Loss: {:.4f} : Mean Dice: {} :".format(e, val_loss, val_dice))
+        print("===> Epoch {} Training Loss: {:.4f} : Mean Dice: {:.4f}".format(e, train_loss, train_dice))
+        print("===> Epoch {} Validation Loss: {:.4f} : Mean Dice: {:.4f} :".format(e, val_loss, val_dice))
+
+        # log train history
+        if args.log == 'yes':
+            logger = Logger(args.log_dir)
+            plotter(log=logger, train_loss=train_loss, train_dice=train_dice, val_loss=val_loss, val_dice=val_dice,
+                    step=e, model=model, images=train_batch)
 
         # save model with best score
         is_best = val_loss < best_loss
         best_loss = min(val_loss, best_loss)
         save_models(model=model, path=args.weights_dir, epoch=e + 1, optimizer=optim, best=is_best, loss=best_loss)
 
-        # log the values
-        history = my_logs(epoch=e, train_loss=train_loss, train_dice=train_dice, val_loss=val_loss, val_dice=val_dice)
+    print("Training Done!")
 
-    print("Training values logged to train.")
-
-    # plot train values
-    if args.plotter == 'yes':
-        from utils.plot import plotter
-
-        show_plots = plotter(history)
-    elif args.plotter == 'no':
-        print("Nothing plotted")
+    if args.log == 'yes':
+        print("\nTo view the logs run tensorboard in your command line: tensorboard --logdir=train_logs/ --port=6006"
+              "\nYou can view the results at:  http://localhost:6006")
