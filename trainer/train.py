@@ -11,7 +11,7 @@ from processing.augments import augmentations
 from sklearn.model_selection import train_test_split
 from visualize.logger import save_models
 from trainer.evaluate import validate_model
-from visualize.plot import plotter
+from visualize.plot import plotter, graph_summary
 from visualize.logger import Logger
 
 
@@ -96,7 +96,7 @@ def train(args):
         if args.log == 'yes':
             logger = Logger(args.log_dir)
             plotter(log=logger, train_loss=train_loss, train_dice=train_dice, val_loss=val_loss, val_dice=val_dice,
-                    step=e, model=model, images=train_batch)
+                    step=e, model=model)
 
         # save model with best score
         is_best = val_loss < best_loss
@@ -108,3 +108,9 @@ def train(args):
     if args.log == 'yes':
         print("\nTo view the logs run tensorboard in your command line: tensorboard --logdir=train_logs/ --port=6006"
               "\nYou can view the results at:  http://localhost:6006")
+
+    if args.build_graph == 'yes':
+        graph = graph_summary(prediction.mean(), params=dict(model.named_parameters()))
+        graph.format = 'png'
+        graph.render('u_net_model')
+        print("Model Graph Built")
