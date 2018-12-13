@@ -14,8 +14,8 @@ if __name__ == '__main__' and __package__ is None:
     # setting the hyper parameters
     parser = argparse.ArgumentParser(description="U-Net.")
 
-    parser.add_argument('--root_dir',
-                        default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
+    parser.add_argument('root_dir',
+                        # default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
                         type=str,
                         help='root directory'
                         )
@@ -69,22 +69,22 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--up_mode',
-                        choices=['upconv, upsample'],
                         default='upsample',
+                        choices=['upconv, upsample'],
                         type=str,
                         help='Type of upsampling'
                         )
 
     parser.add_argument('--augment',
-                        choices=['yes, no'],
                         default='no',
+                        choices=['yes, no'],
                         type=str,
                         help='Whether to augment the train images or not'
                         )
 
     parser.add_argument('--augment_type',
-                        choices=['geometric, image, both'],
                         default='geometric',
+                        choices=['geometric, image, both'],
                         type=str,
                         help='Which type of augmentation to choose from: geometric, brightness or both'
                         )
@@ -96,14 +96,14 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--log',
-                        default='no',
+                        default='yes',
                         choices=['yes', 'no'],
                         type=str,
                         help='Log the Values'
                         )
 
     parser.add_argument('--build_graph',
-                        default='no',
+                        default='yes',
                         choices=['yes', 'no'],
                         type=str,
                         help='Build the model graph'
