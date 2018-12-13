@@ -49,33 +49,28 @@ root_dir
         - plot.py
 ```
 
-## Training
-Run the ```task.py``` from the trainer folder. 
+## Usage
 
-#### Usage
+#### Training
+To train the model run:
 ```
 task.py root_dir(path/to/root directory)
 ```
 
-## Testing
-To evaluate the model on test data run ```task.py root_dir(path/to/root directory) --mode evaluate``` for evaluation.
-
-#### Usage
+### Testing
+To evaluate the model on the test data run:
 ```
-convert_model.py main_dir(path/to/main directory) model_in(model name to be used to convert)
-evaluate.py main_dir(path/to/main directory) model_in(model name to be used for evaluation)
+task.py root_dir(path/to/root directory) --mode evaluate
 ```
 
-### Future Plan
-- write the logger.py to log values and visualize in tensorboard
-- write plot.py into train and plot the logged values
+
+## Future Plan
 - work on augmentations (it is not working yet)
 - finish up the evaluation.py to export data
-- work on the hyperparamters.py to write a script to tune hyperparameters
+- work on the hyperparamters.py and config.py to write a script to tune hyperparameters
+- work on the visualize.py to visualize intermediate layers and build interpretability
 - modify the unet to work on the CHAOS Segmentation challenge
 - modify the unet to work on the PAVES Segmentation challenge
-- modify the unet to work on the Histopathologic cancer classification challenge
-- work on the visualize.py to visualize intermediate layers and build interpretability
 - explore possibilities of converting the tensorflow capsnet to pytorch capsnet
 - run the capsnet on the above challenges
 - write a visualization for capsnet
