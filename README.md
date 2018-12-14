@@ -9,7 +9,8 @@ Pytorch implementation of U-Net
 [![Build Status](https://travis-ci.com/mukeshmithrakumar/U-Net.svg?branch=master)](https://travis-ci.com/mukeshmithrakumar/U-Net)
 [![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![HitCount](http://hits.dwyl.io/mukeshmithrakumar/U-Net.svg)](http://hits.dwyl.io/mukeshmithrakumar/U-Net)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg)](https://www.linkedin.com/in/mukesh-mithrakumar/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-social-blue.svg?logo=#0077B5&style=social&logoColor=blue)](https://www.linkedin.com/in/mukesh-mithrakumar/)
+
 
 ### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v:
 
