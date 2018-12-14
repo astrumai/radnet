@@ -35,18 +35,21 @@ class DataTransformer(Dataset):
             labels = self._read_labels(index)
 
             if self.image_augmentation is not None:
-                print("Aug")
-                image_array = np.array(images)
-                label_array = np.array(labels)
-                aug_images = self.image_augmentation(image=image_array, mask=label_array)
-                trans_images = Image.fromarray(aug_images["image"])
-                trans_labels = Image.fromarray(aug_images["mask"])
+                x = np.array(images)
+                y = np.array(labels)
+                data = {'input': x, 'mask': y}
+                aug_data = self.image_augmentation(data)
+                trans_images = aug_data['input']
+                trans_labels = aug_data['mask']
+
             if self.image_augmentation is None:
                 trans_images = self.image_transform(images)
                 trans_labels = self.image_transform(labels)
             return [trans_images, trans_labels]
+
         if self.labels_filename is None:
             images = self._read_data(index)
             trans_images = self.image_transform(images)
             return trans_images
+
 
