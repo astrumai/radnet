@@ -11,7 +11,7 @@ Pytorch implementation of U-Net
 [![HitCount](http://hits.dwyl.io/mukeshmithrakumar/U-Net.svg)](http://hits.dwyl.io/mukeshmithrakumar/U-Net)
 
 
-### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: and you can reach me via 
+### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: and you can reach me via: 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5)](https://www.linkedin.com/in/mukesh-mithrakumar/)
 
 ## (Work in Progress)
