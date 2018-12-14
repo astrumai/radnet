@@ -291,7 +291,7 @@ def augmentations(args):
     Note:
     """
     augment_type = 'geometric'
-    transform_prob = 1.0
+    transform_prob = args.transform_prob
     if augment_type == 'geometric':
         geometric_transforms = Compose([RandomApply([HorizontalShear(max_scale=0.07)], p=transform_prob),
                                         RandomApply([Rotation(max_angle=15)], p=transform_prob),
