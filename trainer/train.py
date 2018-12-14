@@ -38,7 +38,7 @@ def train(args):
 
     # choose between augmentations for train data
     if args.augment == 'yes':
-        train_augment = augmentations()
+        train_augment = augmentations(args)
         train_transform = DataTransformer(data_path, labels_path, image_transform=train_data,
                                           image_augmentation=train_augment)
 
@@ -106,7 +106,8 @@ def train(args):
     print("Training Done!")
 
     if args.log == 'yes':
-        print("\nTo view the logs run tensorboard in your command line: tensorboard --logdir=train_logs/ --port=6006"
+        print("\nTo view the logs run tensorboard in your command line from the trainer folder"
+              ": tensorboard --logdir=train_logs/ --port=6006"
               "\nYou can view the results at:  http://localhost:6006")
 
     if args.build_graph == 'yes':
