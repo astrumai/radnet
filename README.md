@@ -65,10 +65,9 @@ task.py root_dir(path/to/root directory) --mode evaluate
 
 
 ## Future Plan
-- work on augmentations (it is not working yet)
+- work on the visualize.py to visualize intermediate layers and build interpretability
 - finish up the evaluation.py to export data
 - work on the hyperparamters.py and config.py to write a script to tune hyperparameters
-- work on the visualize.py to visualize intermediate layers and build interpretability
 - modify the unet to work on the CHAOS Segmentation challenge
 - modify the unet to work on the PAVES Segmentation challenge
 - explore possibilities of converting the tensorflow capsnet to pytorch capsnet
