@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def pred_to_numpy(prediction):
@@ -67,3 +68,9 @@ def convert_2d_to_target(arrays, target):
         return convert_2d_to_3d(arrays, num_channels=4)
     else:
         raise ValueError('Unknown target {}'.format(target))
+
+
+def plot_output(prediction):
+    plt.axis('off')
+    plt.imshow(prediction[0].cpu().detach().numpy()[0])
+    plt.show()
