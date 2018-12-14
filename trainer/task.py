@@ -15,7 +15,7 @@ if __name__ == '__main__' and __package__ is None:
     parser = argparse.ArgumentParser(description="U-Net.")
 
     parser.add_argument('root_dir',
-                        # default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
+                        #default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
                         type=str,
                         help='root directory'
                         )
@@ -87,6 +87,12 @@ if __name__ == '__main__' and __package__ is None:
                         choices=['geometric, image, both'],
                         type=str,
                         help='Which type of augmentation to choose from: geometric, brightness or both'
+                        )
+
+    parser.add_argument('--transform_prob',
+                        default=0.5,
+                        type=int,
+                        help='Probability of images to augment when calling augmentations'
                         )
 
     parser.add_argument('--test_size',
