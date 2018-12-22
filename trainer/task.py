@@ -7,22 +7,27 @@ if __name__ == '__main__' and __package__ is None:
     __package__ = "U-Net.trainer"
 
     from trainer import train, evaluate
+    from visualize import interpret
 
     """ 
     Parse the arguments.
     """
     # setting the hyper parameters
+
+    """see to implement sub parsers for interpret and maybe train and evaluate as needed
+    and also for hyperparameter.py """
+
     parser = argparse.ArgumentParser(description="U-Net.")
 
-    parser.add_argument('root_dir',
-                        #default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
+    parser.add_argument('--root_dir',
+                        default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
                         type=str,
                         help='root directory'
                         )
 
     parser.add_argument('--mode',
                         default="train",
-                        choices=['train', 'evaluate'],
+                        choices=['train', 'evaluate', 'interpret'],
                         type=str,
                         help='Choose between training and evaluating a trained model'
                         )
@@ -102,17 +107,24 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--log',
-                        default='yes',
+                        default='no',
                         choices=['yes', 'no'],
                         type=str,
                         help='Log the Values'
                         )
 
     parser.add_argument('--build_graph',
-                        default='yes',
+                        default='no',
                         choices=['yes', 'no'],
                         type=str,
                         help='Build the model graph'
+                        )
+
+    parser.add_argument('--plot_interpret',
+                        default='sensitivity',
+                        choices=['sensitivity'],
+                        type=str,
+                        help='Type of interpret to plot'
                         )
 
     args = parser.parse_args()
@@ -127,6 +139,8 @@ if __name__ == '__main__' and __package__ is None:
         train.train(args)
     elif args.mode == 'evaluate':
         evaluate.evaluate(args)
+    elif args.mode == 'interpret':
+        interpret.interpret(args)
 
 
 
