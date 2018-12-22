@@ -10,111 +10,120 @@ Notes:
     The downsample and upsample block has different types of blocks so there has to be two types of functions for those
     as well.
 """
+from PIL import Image
+import tifffile as tiff
+import torch
+from torchvision.transforms import *
+import os
+import matplotlib.pyplot as plt
+import numpy as np
+from torch.autograd import Variable
 
 
-# split the down sampling blocks
-def split_up_blocks(layer, depth):
-    block_list = []
-    for d in depth:
-        temp = list(layer.children())[d]
-        block_list.append(temp)
-    return block_list
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# split the down sampling blocks
-def split_down_blocks(layer, depth):
-    block_list = []
-    for d in depth:
-        temp = list(layer.children())[d]
-        block_list.append(temp)
-    return block_list
+def load_model(args):
+    checkpoint = os.path.join(args.weights_dir, "./u_net_model.pt")
+    if os.path.isfile(checkpoint):
+        print("===> loading model '{}' ".format(checkpoint))
+        model = torch.load(checkpoint)
+        model = model[0]['model']
+    else:
+        raise FileNotFoundError("===> no model found at {}. Check model path or start training".format(checkpoint))
+    return model
+
+
+# plot down blocks
+def plot_down_blocks(image, input_size):
+    _transform = Compose([Resize(input_size), ToTensor()])
+    trans_img = _transform(image)
+    sqz_img = trans_img.unsqueeze(0).to(device)
+    return sqz_img
 
 
 # a function to pick the blocks for interpreting
-def blocks(sampling, depth, model, args):
-
+def blocks(sampling, depth, model, img_path, args):
+    kit = Image.fromarray((tiff.imread(img_path)))
     layers = list(model.children())
-    # chose between downsampling or upsampling
 
     if sampling == 'down':
         # if downsampling: call a function that takes in the depth of the model and splits it into respective blocks
         layer = layers[0]
         assert depth <= args.depth, "Depth should be equal to or less than the u-net depth"
-        block_list = split_down_blocks(layer, depth)
-        return block_list
+        for d in depth:
+            temp = list(layer.children())[d]
+
+        pass
 
     elif sampling == 'up':
         # if upsampling: do the same but will have to add another child into it since the blocks has upsampling in it
         # need to see how to figure that out
         layer = layers[1]
         assert depth <= (args.depth-1), "Up sampling depth should be one less than the u-net depth"
-        block_list = split_up_blocks(layer, depth)
-        return block_list
+
+        pass
 
     elif sampling == 'both':
         # if both call both sequentially
 
-        return
+        pass
 
 
-# a function to load the image
-def load_test_image(image, ):
-    # the user specifies the path to the image
+def sensitivity_analysis(model, image_tensor, target_class=None, postprocess='abs'):
+    """
+    Note:
+        Code is based on "https://github.com/jrieke/cnn-interpretability/blob/master/interpretation.py"
+    :param model:
+    :param image_tensor:
+    :param target_class:
+    :param postprocess:
+    :return:
+    """
+    image_tensor = torch.Tensor(image_tensor)  # convert numpy or list to tensor
+    X = Variable(image_tensor[None], requires_grad=True)  # add dimension to simulate batch
+    model = model.cpu()
+    model.eval()
+    output = model(X)
+    output_class = output.max(1)[1].data.numpy()[0]
+    # print('Image was classified as:', output_class)
 
-    # read image path
+    model.zero_grad()
+    one_hot_output = torch.zeros(output.size())
+    if target_class is None:
+        one_hot_output[0, output_class] = 1
+    else:
+        one_hot_output[0, target_class] = 1
+    output.backward(gradient=one_hot_output)
 
-    # load the image based on the image path
+    relevance_map = X.grad.data[0].numpy()
 
-    # do resize and to tensor depending on the conv block
-
-    # squeeze the output and send it to the cuda device
-
-    pass
-
-
-# load different blocks for predicting
-def load_blocks():
-    # load different block for predicting
-
-    pass
+    if postprocess == 'abs':  # as in Simonyan et al. (2013)
+        return np.abs(relevance_map)
+    elif postprocess == 'square':  # as in Montavon et al. (2018)
+        return relevance_map**2
+    elif postprocess is None:
+        return relevance_map
+    else:
+        raise ValueError()
 
 
-# plot the weights
-def plot_filters():
-    # choose between different blocks and pick which one to plot from
+def plot_sensitivity(train_path, model, args):
+    img = Image.fromarray(tiff.imread(train_path))
+    img_transform = Compose([Resize(args.image_size), ToTensor()])
+    img_tensor = img_transform(img)
 
-    pass
+    _mapped = sensitivity_analysis(model, img_tensor)
+    mapped = np.squeeze(_mapped, axis=0)
+    plt.imshow(mapped, cmap='gist_heat')
+    plt.axis('off')
+    plt.show()
 
 
 # main function the caller will use
-def interpret(args):
-    # load trained model, if model is not available raise error and call for training
+def interpret(train_path, args):
 
-    # layers = list(model.children())
-    # l = layers[0]
-    # tem = list(l.children())[1]
-    # tem2 = list(tem.children())
-    # print(tem)
-    #
-    # # from visualize.interpret import layer_outputs
-    #
-    # kit = Image.fromarray((tiff.imread(trainPath))[1])
-    # _data = Compose([Resize(64), ToTensor()])
-    # kit2 = _data(kit)
-    # kit3 = kit2.unsqueeze(0).to(device)
-    #
-    # image_vis = tem(kit3)
-    # print(image_vis.shape)
-    # print(image_vis[0][0].shape)
+    model = load_model(args)
 
-    #
-    # fig = plt.figure()
-    # plt.rcParams["figure.figsize"] = (128, 128)
-    # """The output of the 1st block has 64 filters so by changing from [0][0 to 63] you can visualize those filters"""
-    #
-    # for i in range(64):
-    #     fig.add_subplot(8, 8, i+1)
-    #     imgplot = plt.imshow(image_vis[0][i].cpu().detach().numpy())
-    #     plt.axis('off')
-    # plt.show()
-    pass
+    if args.plot_interpret == 'sensitivity':
+        plot_sensitivity(train_path, model, args)
