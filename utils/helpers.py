@@ -72,5 +72,5 @@ def convert_2d_to_target(arrays, target):
 
 def plot_output(prediction):
     plt.axis('off')
-    plt.imshow(prediction[0].cpu().detach().numpy()[0])
+    plt.imshow(prediction[0][0].cpu().detach().numpy())
     plt.show()
