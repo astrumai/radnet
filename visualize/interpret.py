@@ -1,73 +1,73 @@
-""""
-I need to write a class for filter visualizer. Robust to different depths and capable of outputting different types
-of maps based on users choice.
-
-The user will call a function outside of the class, like the aguments and specify the output image type and the depth
-or specific depth he wants to visualize
-
-Notes:
-    Depending on teh depth I will have to resize the image strarting from lets' say we start at 64 > 128 > 256
-    The downsample and upsample block has different types of blocks so there has to be two types of functions for those
-    as well.
-"""
-from PIL import Image
-import tifffile as tiff
 import torch
-from torchvision.transforms import *
-import os
 import matplotlib.pyplot as plt
 import numpy as np
 from torch.autograd import Variable
+from utils.helpers import load_model, load_image
+from math import sqrt
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def load_model(args):
-    checkpoint = os.path.join(args.weights_dir, "./u_net_model.pt")
-    if os.path.isfile(checkpoint):
-        print("===> loading model '{}' ".format(checkpoint))
-        model = torch.load(checkpoint)
-        model = model[0]['model']
-    else:
-        raise FileNotFoundError("===> no model found at {}. Check model path or start training".format(checkpoint))
-    return model
+def all_children(mod):
+    """Return a list of all child modules of the model, and their children, and their children's children, ..."""
+    children = []
+    for idx, child in enumerate(mod.named_modules()):
+        children.append(child)
+    return children
 
 
-# plot down blocks
-def plot_down_blocks(image, input_size):
-    _transform = Compose([Resize(input_size), ToTensor()])
-    trans_img = _transform(image)
-    sqz_img = trans_img.unsqueeze(0).to(device)
-    return sqz_img
+def get_values(iterables, key_to_find):
+    return list(filter(lambda z: key_to_find in z, iterables))
 
 
-# a function to pick the blocks for interpreting
-def blocks(sampling, depth, model, img_path, args):
-    kit = Image.fromarray((tiff.imread(img_path)))
-    layers = list(model.children())
-
+def get_block_list(child_list, args, sampling):
+    block_list = []
     if sampling == 'down':
-        # if downsampling: call a function that takes in the depth of the model and splits it into respective blocks
-        layer = layers[0]
-        assert depth <= args.depth, "Depth should be equal to or less than the u-net depth"
-        for d in depth:
-            temp = list(layer.children())[d]
+        down_seq = []
+        for y in range(args.depth):
+            down_seq.append(get_values(child_list, '{}_path.{}'.format(sampling, y)))
 
-        pass
+        for x in range(args.depth):
+            block_list.append(down_seq[x][0][1])
 
     elif sampling == 'up':
-        # if upsampling: do the same but will have to add another child into it since the blocks has upsampling in it
-        # need to see how to figure that out
-        layer = layers[1]
-        assert depth <= (args.depth-1), "Up sampling depth should be one less than the u-net depth"
+        up_seq = []
+        for y in range(args.depth - 1):
+            up_seq.append(get_values(child_list, '{}_path.{}'.format(sampling, y)))
 
-        pass
+        for x in range(args.depth - 1):
+            block_list.append(up_seq[x][0][1])
 
-    elif sampling == 'both':
-        # if both call both sequentially
+    return block_list
 
-        pass
+
+def plot_block(args, block, img_size, name):
+    fig = plt.figure()
+    plt.rcParams["figure.figsize"] = (50, 50)
+
+    for i in range(img_size):
+        fig.add_subplot(round(sqrt(img_size))+1, round(sqrt(img_size))+1, i + 1)
+        plt.imshow(block[0][i].cpu().detach().numpy())
+        plt.axis('off')
+    plt.savefig(args.interpret_path + '/{}_block_filter_{}.png'.format(name, img_size))
+
+
+def block_filters(model, img_path, args):
+    module_list = all_children(model)
+    img_tensor, _ = load_image(img_path, args)
+    input_img = img_tensor.unsqueeze(0).to(device)
+
+    down_list = get_block_list(module_list, args, sampling='down')
+    up_list = get_block_list(module_list, args, sampling='up')
+
+    dep_list = [down_list[0](input_img)]
+    for i in range(1, len(down_list)):
+        layer = down_list[i](dep_list[i-1])
+        dep_list.append(layer)
+
+    for j, m in zip(range(len(dep_list)), [64, 128, 256]):
+        plot_block(args, dep_list[j], m, name='down')
 
 
 def sensitivity_analysis(model, image_tensor, target_class=None, postprocess='abs'):
@@ -101,29 +101,37 @@ def sensitivity_analysis(model, image_tensor, target_class=None, postprocess='ab
     if postprocess == 'abs':  # as in Simonyan et al. (2013)
         return np.abs(relevance_map)
     elif postprocess == 'square':  # as in Montavon et al. (2018)
-        return relevance_map**2
+        return relevance_map ** 2
     elif postprocess is None:
         return relevance_map
     else:
         raise ValueError()
 
 
-def plot_sensitivity(train_path, model, args):
-    img = Image.fromarray(tiff.imread(train_path))
-    img_transform = Compose([Resize(args.image_size), ToTensor()])
-    img_tensor = img_transform(img)
+def plot_sensitivity(img_path, model, args):
+    img_tensor, img = load_image(img_path, args)
 
     _mapped = sensitivity_analysis(model, img_tensor)
     mapped = np.squeeze(_mapped, axis=0)
-    plt.imshow(mapped, cmap='gist_heat')
-    plt.axis('off')
-    plt.show()
+
+    f, (ax1, ax2) = plt.subplots(1, 2)
+    ax1.set_title('Input Image')
+    ax1.axis('off')
+    ax1.imshow(img)
+
+    ax2.set_title('Sensitivity Map')
+    ax2.axis('off')
+    ax2.imshow(mapped, cmap='gist_gray')
+
+    plt.savefig(args.interpret_path + '/sensitivity.png')
 
 
-# main function the caller will use
-def interpret(train_path, args):
-
+def interpret(args):
     model = load_model(args)
+    img_path = args.train_path + 'test-volume.tif'
 
     if args.plot_interpret == 'sensitivity':
-        plot_sensitivity(train_path, model, args)
+        plot_sensitivity(img_path, model, args)
+
+    if args.plot_interpret == 'block_filters':
+        block_filters(model, img_path, args)
