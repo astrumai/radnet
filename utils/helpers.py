@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import torch
+from PIL import Image
+import tifffile as tiff
+from torchvision.transforms import Compose, Resize, ToTensor
 
 
 def pred_to_numpy(prediction):
     """
-
     :param prediction:
     :return:
     """
@@ -13,7 +17,6 @@ def pred_to_numpy(prediction):
 
 def to_numpy(tensor):
     """
-
     :param tensor:
     :return:
     """
@@ -22,7 +25,6 @@ def to_numpy(tensor):
 
 def to_tuple(param, low=None):
     """
-
     :param param:
     :param low:
     :return:
@@ -55,7 +57,6 @@ def convert_2d_to_3d(arrays, num_channels=3):
 
 def convert_2d_to_target(arrays, target):
     """
-
     :param arrays:
     :param target:
     :return:
@@ -74,3 +75,21 @@ def plot_output(prediction):
     plt.axis('off')
     plt.imshow(prediction[0][0].cpu().detach().numpy())
     plt.show()
+
+
+def load_model(args):
+    checkpoint = os.path.join(args.weights_dir, "./u_net_model.pt")
+    if os.path.isfile(checkpoint):
+        print("===> loading model '{}' ".format(checkpoint))
+        model = torch.load(checkpoint)
+        model = model[0]['model']
+    else:
+        raise FileNotFoundError("===> no model found at {}. Check model path or start training".format(checkpoint))
+    return model
+
+
+def load_image(img_path, args):
+    img = Image.fromarray((tiff.imread(img_path))[1])
+    img_transform = Compose([Resize(args.image_size), ToTensor()])
+    img_tensor = img_transform(img)
+    return img_tensor, img
