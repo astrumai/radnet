@@ -122,9 +122,21 @@ if __name__ == '__main__' and __package__ is None:
 
     parser.add_argument('--plot_interpret',
                         default='sensitivity',
-                        choices=['sensitivity'],
+                        choices=['sensitivity', 'block_filters'],
                         type=str,
                         help='Type of interpret to plot'
+                        )
+
+    parser.add_argument('--interpret_path',
+                        default='./visualize',
+                        type=str,
+                        help='Choose directory to save layer visualizations'
+                        )
+
+    parser.add_argument('--plot_size',
+                        default=128,
+                        type=int,
+                        help='Image size of sensitivity analysis'
                         )
 
     args = parser.parse_args()
@@ -134,6 +146,9 @@ if __name__ == '__main__' and __package__ is None:
 
     if not os.path.exists(args.log_dir):
         os.makedirs(args.log_dir)
+
+    if not os.path.exists(args.interpret_path):
+        os.makedirs(args.interpret_path)
 
     if args.mode == 'train':
         train.train(args)
