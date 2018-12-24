@@ -24,18 +24,9 @@ class UNet(nn.Module):
                        'upsample' will use bilinear upsampling.
 
     Returns:
-
-
     """
 
-    def __init__(self,
-                 in_channels=1,
-                 n_classes=2,
-                 depth=5,
-                 wf=6,
-                 padding=False,
-                 batch_norm=False,
-                 up_mode='upconv'):
+    def __init__(self, in_channels=1, n_classes=2, depth=5, wf=6, padding=False, batch_norm=False, up_mode='upconv'):
 
         super(UNet, self).__init__()
         assert up_mode in ('upconv', 'upsample')
@@ -45,13 +36,13 @@ class UNet(nn.Module):
         self.down_path = nn.ModuleList()
 
         for i in range(depth):
-            self.down_path.append(UNetConvBlock(prev_channels, 2**(wf+i),padding, batch_norm))
-            prev_channels = 2**(wf+i)
+            self.down_path.append(UNetConvBlock(prev_channels, 2 ** (wf + i), padding, batch_norm))
+            prev_channels = 2 ** (wf + i)
 
         self.up_path = nn.ModuleList()
         for i in reversed(range(depth - 1)):
-            self.up_path.append(UNetUpBlock(prev_channels, 2**(wf+i), up_mode, padding, batch_norm))
-            prev_channels = 2**(wf+i)
+            self.up_path.append(UNetUpBlock(prev_channels, 2 ** (wf + i), up_mode, padding, batch_norm))
+            prev_channels = 2 ** (wf + i)
 
         self.last = nn.Conv2d(prev_channels, n_classes, kernel_size=1)
 
@@ -59,12 +50,12 @@ class UNet(nn.Module):
         blocks = []
         for i, down in enumerate(self.down_path):
             x = down(x)
-            if i != len(self.down_path)-1:
+            if i != len(self.down_path) - 1:
                 blocks.append(x)
                 x = F.avg_pool2d(x, 2)
 
         for i, up in enumerate(self.up_path):
-            x = up(x, blocks[-i-1])
+            x = up(x, blocks[-i - 1])
 
         return self.last(x)
 
@@ -80,14 +71,9 @@ class UNetConvBlock(nn.Module):
         batch_norm ():
 
     Return:
-
     """
 
-    def __init__(self,
-                 in_size,
-                 out_size,
-                 padding,
-                 batch_norm):
+    def __init__(self, in_size, out_size, padding, batch_norm):
 
         super(UNetConvBlock, self).__init__()
         block = [nn.Conv2d(in_size, out_size, kernel_size=3, padding=int(padding)),
@@ -115,16 +101,9 @@ class UNetUpBlock(nn.Module):
     Arguments:
 
     Return:
-
-
     """
 
-    def __init__(self,
-                 in_size,
-                 out_size,
-                 up_mode,
-                 padding,
-                 batch_norm):
+    def __init__(self, in_size, out_size, up_mode, padding, batch_norm):
 
         super(UNetUpBlock, self).__init__()
         if up_mode == 'upconv':
@@ -149,5 +128,3 @@ class UNetUpBlock(nn.Module):
         out = self.conv_block(out)
 
         return out
-
-
