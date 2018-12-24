@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 import torch
 import numpy as np
 from utils.metrics import dice
-from utils.helpers import pred_to_numpy, to_numpy
+from utils.helpers import pred_to_numpy, to_numpy, load_model
 from torch import nn
 
 
@@ -47,14 +47,7 @@ def evaluate(args):
     test_loader = DataLoader(test_transform)
 
     # load the saved model and start making predictions, if model is not present call training
-    checkpoint = os.path.join(args.weights_dir, "./u_net_model.pt")
-    if os.path.isfile(checkpoint):
-        print("===> loading checkpoint '{}' ".format(checkpoint))
-        model = torch.load(checkpoint)
-        model = model[0]['model']
-        model = model.eval()
-    else:
-        raise FileNotFoundError("===> no checkpoint found at {}".format(checkpoint))
+    model = load_model(args)
     pred_list = []
     for data in test_loader:
         data = data.to(device)
