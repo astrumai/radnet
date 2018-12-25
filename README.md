@@ -1,5 +1,4 @@
-<p align="center"><img width="40%" src="logo/Pytorch_logo.png" /></p>
-<script async defer src="https://buttons.github.io/buttons.js"></script>
+<img src="logo/Pytorch_logo.png">
 
 # U-Net
 Pytorch implementation of U-Net
@@ -13,7 +12,6 @@ Pytorch implementation of U-Net
 
 
 ### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: 
-<a class="github-button" href="https://github.com/mukeshmithrakumar/U-Net" aria-label="Star mukeshmithrakumar/U-Net on GitHub">Star</a>
 
 
 ### For any questionsn and collaborations you can reach me via: 
@@ -99,7 +97,7 @@ task.py root_dir(path/to/root directory) --mode interpret
 #### Sensitivity Analysis
 Is the default option if you activate interpret mode
 
-<p align="center"><img width="40%" src="logo/sensitivity.png" /></p>
+<img src="logo/sensitivity.png">
 
 #### Block Analysis
 To visualize the weight output of each downsampling block run:
