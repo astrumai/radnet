@@ -1,9 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+import tifffile as tiff
 import torch
 from PIL import Image
-import tifffile as tiff
 from torchvision.transforms import Compose, Resize, ToTensor
 
 
