@@ -12,7 +12,11 @@ Pytorch implementation of U-Net
 [![Colab](https://colab.research.google.com/assets/colab-badge.svg)]()
 
 
-### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: and you can reach me via: 
+### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: 
+<!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/mukeshmithrakumar/U-Net" data-icon="octicon-star" aria-label="Star mukeshmithrakumar/U-Net on GitHub">Star</a>
+
+### For any questionsn and collaborations you can reach me via: 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5)](https://www.linkedin.com/in/mukesh-mithrakumar/)
 
 ## (Work in Progress)
@@ -80,7 +84,6 @@ task.py root_dir(path/to/root directory) --build_graph yes
 
 <img src="logo/u_net_model.png">
 
-
 ### Test Mode
 To evaluate the model on the test data run:
 ```
@@ -94,7 +97,9 @@ task.py root_dir(path/to/root directory) --mode interpret
 ```
 
 #### Sensitivity Analysis
-Is the default option
+Is the default option if you activate interpret mode
+
+<img src="logo/sensitivity.png">
 
 #### Block Analysis
 To visualize the weight output of each downsampling block run:
@@ -102,14 +107,21 @@ To visualize the weight output of each downsampling block run:
 task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block_filters
 ```
 
+<img src="logo/block_filters.gif">
 
-## Future Plan
-- finish visualize.py with individual layer visualization and upsampling
+### Keep an eye out :eyes: for upcoming updates via clicking:
+
+
+## Upcoming Updates
+- finish visualize.py with individual layer visualization and upsampling blocks
 - write keys for arguments
 - work on the hyperparamters.py and config.py to write a script to tune hyperparameters
 - finish unit_test.py
-- modify the unet to work on the CHAOS Segmentation challenge
-- modify the unet to work on the PAVES Segmentation challenge
+- modify the unet to work on MRI data
+- test on the CHAOS Segmentation challenge
+- modify the unet to work on CT scan
+- test on the PAVES Segmentation challenge
+- write a neural architecture search script
 - explore possibilities of converting the tensorflow capsnet to pytorch capsnet
 - run the capsnet on the above challenges
 - write a visualization for capsnet
