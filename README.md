@@ -1,4 +1,4 @@
-<p align="center"><img width="40%" src="logo/Pytorch_logo.png" /></p>
+<p align="center"><img width="50%" src="logo/Pytorch_logo.png" /></p>
 
 # U-Net
 Pytorch implementation of U-Net
@@ -12,9 +12,10 @@ Pytorch implementation of U-Net
 
 
 ### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: 
+[![](https://img.shields.io/github/stars/mukeshmithrakumar/U-Net.svg?label=Stars&style=social)](https://github.com/mukeshmithrakumar/U-Net/stargazers)
 
 
-### For any questionsn and collaborations you can reach me via: 
+### For any questions and collaborations you can reach me via: 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5)](https://www.linkedin.com/in/mukesh-mithrakumar/)
 
 ## (Work in Progress)
@@ -103,7 +104,7 @@ To visualize the weight output of each downsampling block run:
 ```
 task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block_filters
 ```
-<p align="center"><img width="60%" src="logo/block_filters.gif" /></p>
+<p align="center"><img width="80%" src="logo/block_filters.gif" /></p>
 
 ### Keep an eye out :eyes: for upcoming updates via clicking:
 
