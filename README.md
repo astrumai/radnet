@@ -97,12 +97,13 @@ task.py root_dir(path/to/root directory) --mode interpret
 #### Sensitivity Analysis
 Is the default option if you activate interpret mode
 <img src="logo/sensitivity.png">
+
 #### Block Analysis
 To visualize the weight output of each downsampling block run:
 ```
 task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block_filters
 ```
-<img src="logo/block_filters.gif">
+<p align="center"><img width="60%" src="logo/block_filters.gif" /></p>
 
 ### Keep an eye out :eyes: for upcoming updates via clicking:
 
