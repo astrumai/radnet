@@ -54,7 +54,7 @@ root_dir
 
 ## Usage
 
-### Train Mode
+### 1. Train Mode
 To train the model run:
 ```
 task.py root_dir(path/to/root directory)
@@ -79,20 +79,20 @@ task.py root_dir(path/to/root directory) --build_graph yes
 
 <img src="logo/u_net_model.png">
 
-### Test Mode
+### 2. Test Mode
 To evaluate the model on the test data run:
 ```
 task.py root_dir(path/to/root directory) --mode evaluate
 ```
 
-### Interpret Mode
+### 3. Interpret Mode
 To visualize the intermediate layers:
 ```
 task.py root_dir(path/to/root directory) --mode interpret
 ```
 
 #### Sensitivity Analysis
-Is the default option if you activate interpret mode
+Is the default option when you run interpret mode
 <img src="logo/sensitivity.png">
 
 #### Block Analysis
@@ -102,9 +102,8 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 ```
 <p align="center"><img width="80%" src="logo/block_filters.gif" /></p>
 
-### Keep an eye out :eyes: for upcoming updates: [![](https://img.shields.io/github/watchers/mukeshmithrakumar/U-Net.svg?label=Watch&style=social)](https://github.com/mukeshmithrakumar/U-Net/watchers)
 
-## Upcoming Updates
+## Keep an eye out :eyes: for Upcoming Updates [![](https://img.shields.io/github/watchers/mukeshmithrakumar/U-Net.svg?label=Watch&style=social)](https://github.com/mukeshmithrakumar/U-Net/watchers)
 - finish visualize.py with individual layer visualization and upsampling blocks
 - write keys for arguments
 - work on the hyperparamters.py and config.py to write a script to tune hyperparameters
