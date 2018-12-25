@@ -68,7 +68,7 @@ task.py root_dir(path/to/root directory) --log yes
 ```
 
 To see the log in tensorboard follow the log statement after trainnig
-<p align="center"><img width="40%" src="logo/histogram_logs.png" /></p>
+<img src="logo/histogram_logs.gif">
 
 #### Network Graph
 Since Pytorch graphs are dynamic I couldn't yet integrate it with thensorflow but as a quick hack run the following
