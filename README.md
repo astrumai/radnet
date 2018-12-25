@@ -1,5 +1,4 @@
 <p align="center"><img width="40%" src="logo/Pytorch_logo.png" /></p>
-<img src="logo/Pytorch_logo.png">
 
 # U-Net
 Pytorch implementation of U-Net
