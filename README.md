@@ -67,7 +67,8 @@ To activate logging of the errors (:default is set as no)
 task.py root_dir(path/to/root directory) --log yes
 ```
 
-To see the log in tensorboard follow the log statement after trainnig
+To see the log in tensorboard follow the log statement after training:
+
 <img src="logo/histogram_logs.gif">
 
 #### Network Graph
@@ -76,6 +77,9 @@ to build a png version of the model architecture (:default is set as no)
 ```
 task.py root_dir(path/to/root directory) --build_graph yes
 ```
+
+<img src="logo/u_net_model.png">
+
 
 ### Test Mode
 To evaluate the model on the test data run:
