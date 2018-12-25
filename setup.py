@@ -4,7 +4,8 @@ from setuptools import find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-REQUIRED_PACKAGES = ['pytorch', 'tifffile', 'pillow', 'opencv', 'scipy']
+REQUIRED_PACKAGES = ['pytorch', 'tifffile', 'pillow', 'opencv', 'scipy', 'torch',
+                     'torchvision', 'numpy', 'scikit-learn', 'tensorflow']
 
 setuptools.setup(
     name="U-Net",

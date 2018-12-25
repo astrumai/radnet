@@ -1,3 +1,7 @@
+matplotlib
+graphviz
+tensorflow
+scikit-learn
 pytorch
 tifffile
 pillow
