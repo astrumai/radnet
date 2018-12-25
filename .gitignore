@@ -108,7 +108,6 @@ venv.bak/
 .idea/
 U-Net.ipynb
 data/
-logo/histogram_logs.gif
 model/__pycache__/
 processing/__pycache__/
 trainer/__pycache__/
