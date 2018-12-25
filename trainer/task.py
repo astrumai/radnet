@@ -57,7 +57,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--epochs',
-                        default=5,
+                        default=1000,
                         type=int
                         )
 
@@ -81,7 +81,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--augment',
-                        default='no',
+                        default='yes',
                         choices=['yes, no'],
                         type=str,
                         help='Whether to augment the train images or not'
@@ -107,14 +107,14 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--log',
-                        default='no',
+                        default='yes',
                         choices=['yes', 'no'],
                         type=str,
                         help='Log the Values'
                         )
 
     parser.add_argument('--build_graph',
-                        default='no',
+                        default='yes',
                         choices=['yes', 'no'],
                         type=str,
                         help='Build the model graph'
