@@ -1,7 +1,15 @@
-import tifffile as tiff
-from torch.utils.data.dataset import Dataset
-from PIL import Image
+import os
+
 import numpy as np
+import tifffile as tiff
+from PIL import Image
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Dataset
+from torch.utils.data.sampler import RandomSampler, SequentialSampler
+from torchvision.transforms import Compose, Resize, ToTensor
+
+from processing.augments import augmentations
 
 
 class DataTransformer(Dataset):
@@ -53,3 +61,38 @@ class DataTransformer(Dataset):
             return trans_images
 
 
+def load_data(args):
+    """Load data from here and return train loader and validation loader"""
+    # get data set file path
+    data_path = os.path.join(args.root_dir, 'data', 'train-volume.tif')
+    labels_path = os.path.join(args.root_dir, 'data', 'train-labels.tif')
+
+    # compose the transforms for the train set
+    train_data = Compose([Resize(args.image_size), ToTensor()])
+
+    # choose between augmentations for train data
+    if args.augment == 'yes':
+        train_augment = augmentations(args)
+        train_transform = DataTransformer(data_path, labels_path, image_transform=train_data,
+                                          image_augmentation=train_augment)
+
+    elif args.augment == 'no':
+        # transforming the train data and returning a 4D tensor
+        train_transform = DataTransformer(data_path, labels_path, image_transform=train_data, image_augmentation=None)
+
+    # transform for validation data
+    val_data = Compose([Resize(args.image_size), ToTensor()])
+    val_transform = DataTransformer(data_path, labels_path, image_transform=val_data, image_augmentation=None)
+
+    # split the train and validation indices
+    train_indices, validation_indices = train_test_split(range(len(train_transform)), test_size=0.15)
+
+    # call the sampler for the train and validation data
+    train_samples = RandomSampler(train_indices)
+    validation_samples = SequentialSampler(validation_indices)
+
+    # load train and validation data
+    train_loader = DataLoader(train_transform, batch_size=args.batch_size, sampler=train_samples)
+    val_loader = DataLoader(val_transform, batch_size=args.batch_size, sampler=validation_samples)
+
+    return train_loader, val_loader
