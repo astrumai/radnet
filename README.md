@@ -112,3 +112,4 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 - compare unet and capsnet
 - write the paper on visualizing models for biomedical image segmentation
 - One U-Net to segment different organs and a classifier to identify between the organs and another seperate classifier to detect cancer cells
+- 
