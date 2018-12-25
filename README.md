@@ -68,6 +68,7 @@ task.py root_dir(path/to/root directory) --log yes
 ```
 
 To see the log in tensorboard follow the log statement after trainnig
+<p align="center"><img width="40%" src="logo/histogram_logs.png" /></p>
 
 #### Network Graph
 Since Pytorch graphs are dynamic I couldn't yet integrate it with thensorflow but as a quick hack run the following
@@ -110,4 +111,4 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 - write a visualization for capsnet
 - compare unet and capsnet
 - write the paper on visualizing models for biomedical image segmentation
-
+- One U-Net to segment different organs and a classifier to identify between the organs and another seperate classifier to detect cancer cells
