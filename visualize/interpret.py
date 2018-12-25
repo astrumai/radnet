@@ -1,10 +1,12 @@
-import torch
-import matplotlib.pyplot as plt
-import numpy as np
-from torch.autograd import Variable
-from utils.helpers import load_model, load_image
+import os
 from math import sqrt
 
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+from torch.autograd import Variable
+
+from utils.helpers import load_model, load_image
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -50,6 +52,7 @@ def plot_block(args, block, img_size, name):
         fig.add_subplot(round(sqrt(img_size))+1, round(sqrt(img_size))+1, i + 1)
         plt.imshow(block[0][i].cpu().detach().numpy())
         plt.axis('off')
+    fig.suptitle('{0} Block Filter Size {1}x{1}'.format(name, img_size), fontsize=25)
     plt.savefig(args.interpret_path + '/{}_block_filter_{}.png'.format(name, img_size))
 
 
@@ -128,7 +131,7 @@ def plot_sensitivity(img_path, model, args):
 
 def interpret(args):
     model = load_model(args)
-    img_path = args.train_path + 'test-volume.tif'
+    img_path = os.path.join(args.root_dir, 'data', 'test-volume.tif')
 
     if args.plot_interpret == 'sensitivity':
         plot_sensitivity(img_path, model, args)
