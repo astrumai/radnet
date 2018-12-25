@@ -11,12 +11,8 @@ Pytorch implementation of U-Net
 [![Colab](https://colab.research.google.com/assets/colab-badge.svg)]()
 
 
-### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: 
-[![](https://img.shields.io/github/stars/mukeshmithrakumar/U-Net.svg?label=Stars&style=social)](https://github.com/mukeshmithrakumar/U-Net/stargazers)
-
-
-### For any questions and collaborations you can reach me via: 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5)](https://www.linkedin.com/in/mukesh-mithrakumar/)
+### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: [![](https://img.shields.io/github/stars/mukeshmithrakumar/U-Net.svg?label=Stars&style=social)](https://github.com/mukeshmithrakumar/U-Net/stargazers)
+### For any questions and collaborations you can reach me via: [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5)](https://www.linkedin.com/in/mukesh-mithrakumar/)
 
 ## (Work in Progress)
 
@@ -106,8 +102,7 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 ```
 <p align="center"><img width="80%" src="logo/block_filters.gif" /></p>
 
-### Keep an eye out :eyes: for upcoming updates via clicking:
-
+### Keep an eye out :eyes: for upcoming updates: [![](https://img.shields.io/github/watchers/mukeshmithrakumar/U-Net.svg?label=Watch&style=social)](https://github.com/mukeshmithrakumar/U-Net/watchers)
 
 ## Upcoming Updates
 - finish visualize.py with individual layer visualization and upsampling blocks
