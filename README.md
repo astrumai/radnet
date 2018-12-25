@@ -55,23 +55,54 @@ root_dir
 
 ## Usage
 
-#### Training
+### Train Mode
 To train the model run:
 ```
 task.py root_dir(path/to/root directory)
 ```
 
-### Testing
+#### Logging 
+To activate logging of the errors (:default is set as no)
+```
+task.py root_dir(path/to/root directory) --log yes
+```
+
+To see the log in tensorboard follow the log statement after trainnig
+
+#### Network Graph
+Since Pytorch graphs are dynamic I couldn't yet integrate it with thensorflow but as a quick hack run the following
+to build a png version of the model architecture (:default is set as no)
+```
+task.py root_dir(path/to/root directory) --build_graph yes
+```
+
+### Test Mode
 To evaluate the model on the test data run:
 ```
 task.py root_dir(path/to/root directory) --mode evaluate
 ```
 
+### Interpret Mode
+To visualize the intermediate layers:
+```
+task.py root_dir(path/to/root directory) --mode interpret
+```
+
+#### Sensitivity Analysis
+Is the default option
+
+#### Block Analysis
+To visualize the weight output of each downsampling block run:
+```
+task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block_filters
+```
+
 
 ## Future Plan
-- work on the visualize.py to visualize intermediate layers and build interpretability
-- finish up the evaluation.py to export data
+- finish visualize.py with individual layer visualization and upsampling
+- write keys for arguments
 - work on the hyperparamters.py and config.py to write a script to tune hyperparameters
+- finish unit_test.py
 - modify the unet to work on the CHAOS Segmentation challenge
 - modify the unet to work on the PAVES Segmentation challenge
 - explore possibilities of converting the tensorflow capsnet to pytorch capsnet
