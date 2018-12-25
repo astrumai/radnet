@@ -107,14 +107,14 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--log',
-                        default='yes',
+                        default='no',
                         choices=['yes', 'no'],
                         type=str,
                         help='Log the Values'
                         )
 
     parser.add_argument('--build_graph',
-                        default='yes',
+                        default='no',
                         choices=['yes', 'no'],
                         type=str,
                         help='Build the model graph'
