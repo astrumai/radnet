@@ -26,7 +26,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--mode',
-                        default="train",
+                        default="interpret",
                         choices=['train', 'evaluate', 'interpret'],
                         type=str,
                         help='Choose between training and evaluating a trained model'
@@ -121,7 +121,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--plot_interpret',
-                        default='sensitivity',
+                        default='block_filters',
                         choices=['sensitivity', 'block_filters'],
                         type=str,
                         help='Type of interpret to plot'
