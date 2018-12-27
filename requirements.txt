@@ -6,5 +6,4 @@ pytorch
 tifffile
 pillow
 scipy
-torchvision
 numpy
