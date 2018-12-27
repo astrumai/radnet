@@ -108,15 +108,13 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 - finish visualize.py with individual layer visualization and upsampling blocks
 - write keys for arguments
 - work on the hyperparamters.py and config.py to write a script to tune hyperparameters
+- work on a biomedical image preprocessing script
 - finish unit_test.py
 - modify the unet to work on MRI data
 - test on the CHAOS Segmentation challenge
 - modify the unet to work on CT scan
 - test on the PAVES Segmentation challenge
 - write a neural architecture search script
-- explore possibilities of converting the tensorflow capsnet to pytorch capsnet
-- run the capsnet on the above challenges
-- write a visualization for capsnet
-- compare unet and capsnet
-- write the paper on visualizing models for biomedical image segmentation
-- One U-Net to segment different organs and a classifier to identify between the organs and another seperate classifier to detect cancer cells
+- One U-Net to segment different organs and a classifier to identify between the organs and another separate classifier to detect cancer cells
+- Build the PyPI package
+- Write a demo in colab
