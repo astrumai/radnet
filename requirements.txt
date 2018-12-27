@@ -6,7 +6,6 @@ pytorch
 tifffile
 pillow
 scipy
-torch
 torchvision
 numpy
 opencv==3.4.3
