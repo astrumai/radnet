@@ -9,3 +9,6 @@ install:
   - travis_wait pip install 'torch'
   - pip install 'torchvision'
 
+script:
+  - task.py
+
