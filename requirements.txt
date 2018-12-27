@@ -5,7 +5,6 @@ scikit-learn
 pytorch
 tifffile
 pillow
-opencv==3.4.3
 scipy
 torch
 torchvision
