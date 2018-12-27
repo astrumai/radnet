@@ -6,6 +6,6 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install 'opencv-python>=3.3.0'
-  - pip install 'torch'
+  - travis_wait pip install 'torch'
   - pip install 'torchvision'
 
