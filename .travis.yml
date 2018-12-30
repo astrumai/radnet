@@ -17,5 +17,5 @@ install:
   - pip install 'torchvision'
 
 script:
-  - python setup.py
+  - ./trainer/task.py
 
