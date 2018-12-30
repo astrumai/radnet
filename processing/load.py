@@ -9,7 +9,7 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
 from torchvision.transforms import Compose, Resize, ToTensor
 
-from processing.augments import augmentations
+from ..processing.augments import augmentations
 
 
 class DataTransformer(Dataset):
