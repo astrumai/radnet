@@ -1,8 +1,0 @@
-matplotlib
-graphviz
-tensorflow
-scikit-learn
-tifffile
-pillow
-scipy
-numpy
