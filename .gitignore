@@ -111,7 +111,7 @@ data/
 pytorch_unet/model/__pycache__/
 pytorch_unet/processing/__pycache__/
 pytorch_unet/trainer/__pycache__/
+pytorch_unet/utils/__pycache__/
 pytorch_unet/trainer/train_logs/
 pytorch_unet/trainer/visualize/
 pytorch_unet/trainer/weights/
-pytorch_unet/utils/__pycache__/
