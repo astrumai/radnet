@@ -18,7 +18,7 @@ if __name__ == '__main__' and __package__ is None:
     parser = argparse.ArgumentParser(description="U-Net.")
 
     parser.add_argument('--root_dir',
-                        default="C:\\Users\\Mukesh\\Segmentation\\U-net\\",
+                        default="./",
                         type=str,
                         help='root directory'
                         )
