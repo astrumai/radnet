@@ -1,16 +1,37 @@
+import argparse
 import os
+import sys
 
 import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, Resize, ToTensor
 
-from pytorch_unet.processing import DataTransformer
-from pytorch_unet.utils import pred_to_numpy, load_model
+if __name__ == '__main__' and __package__ is None:
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+    __package__ = "pytorch_unet.trainer"
+
+from pytorch_unet.processing.load import DataTransformer
+from pytorch_unet.utils.helpers import pred_to_numpy, load_model
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def evaluate(args):
+def parse_args(args):
+    parser = argparse.ArgumentParser(description='Script for evaluating the trained model')
+
+    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", type=str,
+                        help='root directory')
+    parser.add_argument('--image_size', default=64, type=int, help='resize image size')
+    parser.add_argument('--weights_dir', default="./weights", type=str, help='Choose directory to save weights model')
+
+    return parser.parse_args(args)
+
+
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+    args = parse_args(args)
+
     test_path = os.path.join(args.root_dir, 'data', 'test-volume.tif')
 
     # compose the transforms for the train set and transform to a 4D tensor
@@ -37,4 +58,8 @@ def evaluate(args):
             pred_list.append(re_labels)
 
     # save the predictions
-    print("predictions complete")
+    print("Evaluations complete")
+
+
+if __name__ == '__main__':
+    main()

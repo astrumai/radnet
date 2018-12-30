@@ -16,6 +16,8 @@ install:
   - travis_wait pip install 'torch'
   - pip install 'torchvision'
   - pip install 'pytest'
+  - pip install 'pytest-flake8'
 
 script:
-  - cd trainer && python task.py
+  - python setup.py build_run --inplace
+  - py.test --flake8 --forked

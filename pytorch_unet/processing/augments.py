@@ -3,7 +3,7 @@ import random
 import cv2
 import numpy as np
 import torch
-from torchvision.transforms import *
+from torchvision.transforms import RandomApply, Compose
 
 
 class PrepareImageAndMask(object):

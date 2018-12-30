@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 from math import sqrt
 
 import matplotlib.pyplot as plt
@@ -6,9 +8,27 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
-from pytorch_unet.utils import load_model, load_image
+if __name__ == '__main__' and __package__ is None:
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+    __package__ = "pytorch_unet.trainer"
+
+from pytorch_unet.utils.helpers import load_model, load_image
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+def parse_args(args):
+    parser = argparse.ArgumentParser(description='Script for interpreting the trained model results')
+
+    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", type=str,
+                        help='root directory')
+    parser.add_argument('--interpret_path', default='./visualize', type=str,
+                        help='Choose directory to save layer visualizations')
+    parser.add_argument('--plot_interpret', default='block_filters', choices=['sensitivity', 'block_filters'], type=str,
+                        help='Type of interpret to plot')
+    parser.add_argument('--plot_size', default=128, type=int, help='Image size of sensitivity analysis')
+
+    return parser.parse_args(args)
 
 
 def all_children(mod):
@@ -129,7 +149,14 @@ def plot_sensitivity(img_path, model, args):
     plt.savefig(args.interpret_path + '/sensitivity.png')
 
 
-def interpret(args):
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+    args = parse_args(args)
+
+    if not os.path.exists(args.interpret_path):
+        os.makedirs(args.interpret_path)
+
     model = load_model(args)
     img_path = os.path.join(args.root_dir, 'data', 'test-volume.tif')
 
@@ -138,3 +165,9 @@ def interpret(args):
 
     if args.plot_interpret == 'block_filters':
         block_filters(model, img_path, args)
+
+    print("Interpretation complete")
+
+
+if __name__ == '__main__':
+    main()

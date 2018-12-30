@@ -3,7 +3,7 @@ from distutils.command.build_ext import build_ext as distutils_build_ext
 from setuptools import find_packages, setup, Command
 
 
-class BuildExtension(Command):
+class BuildRun(Command):
     description = distutils_build_ext.description
     user_options = distutils_build_ext.user_options
     boolean_options = distutils_build_ext.boolean_options
@@ -26,10 +26,7 @@ class BuildExtension(Command):
         return self._command.initialize_options(*args, **kwargs)
 
     def finalize_options(self, *args, **kwargs):
-        ret = self._command.finalize_options(*args, **kwargs)
-        import numpy
-        self.include_dirs.append(numpy.get_include())
-        return ret
+        pass
 
     def run(self, *args, **kwargs):
         return self._command.run(*args, **kwargs)
@@ -52,7 +49,7 @@ REQUIRED_PACKAGES = ['matplotlib',
                      'pytest']
 
 setup(
-    name="UNet",
+    name="rad_net",
     version="0.1.0",
     author="Mukesh Mithrakumar",
     author_email="mukesh.mithrakumar@jacks.sdstate.edu",
@@ -64,7 +61,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     install_requires=REQUIRED_PACKAGES,
     classifiers=(
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 0.1.0.dev1",
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
         "License :: OSI Approved :: MIT License",
@@ -74,10 +71,11 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'unet-train = trainer.train:main',
-            'unet-evaluate = trainer.evaluate:main',
-            'unet-interpret = trainer.interpret:main',
+            'unet-train = pytorch_unet.trainer.train:main',
+            'unet-evaluate = pytorch_unet.trainer.evaluate:main',
+            'unet-interpret = pytorch_unet.trainer.interpret:main',
         ]
     },
     python_requires='>=3',
+    cmdclass={'build_run': BuildRun}
 )

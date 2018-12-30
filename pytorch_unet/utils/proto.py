@@ -5,10 +5,11 @@ from torch import nn
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import RandomSampler
+from torchvision.transforms import Resize, ToTensor
 
 from pytorch_unet.model.u_net import UNet
-from pytorch_unet.processing import DataTransformer
 from pytorch_unet.processing.augments import *
+from pytorch_unet.processing.load import DataTransformer
 
 torch.set_default_tensor_type('torch.FloatTensor')
 
