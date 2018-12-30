@@ -156,5 +156,4 @@ if __name__ == '__main__' and __package__ is None:
     elif args.mode == 'interpret':
         interpret.interpret(args)
 
-
-
+    train.train(args)
