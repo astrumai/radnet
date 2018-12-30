@@ -6,9 +6,8 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
     __package__ = "U-Net.trainer"
 
-    from trainer import train, evaluate
-    from visualize import interpret
-
+    from ..trainer import train, evaluate
+    from ..visualize import interpret
     """ 
     Parse the arguments.
     """

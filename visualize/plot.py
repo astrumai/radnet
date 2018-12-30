@@ -1,8 +1,8 @@
-import numpy as np
 from collections import namedtuple
-from distutils.version import LooseVersion
-from graphviz import Digraph
+
+import numpy as np
 import torch
+from graphviz import Digraph
 from torch.autograd import Variable
 
 

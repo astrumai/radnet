@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
-from utils.helpers import load_model, load_image
+from ..utils.helpers import load_model, load_image
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

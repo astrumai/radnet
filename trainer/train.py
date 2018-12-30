@@ -3,13 +3,13 @@ import torch
 from torch import nn
 from torch.optim import Adam
 
-from model.u_net import UNet
-from processing.load import load_data
-from utils.helpers import pred_to_numpy, to_numpy
-from utils.metrics import dice
-from visualize.logger import Logger
-from visualize.logger import save_models
-from visualize.plot import plotter, graph_summary
+from ..model.u_net import UNet
+from ..processing.load import load_data
+from ..utils.helpers import pred_to_numpy, to_numpy
+from ..utils.metrics import dice
+from ..visualize.logger import Logger
+from ..visualize.logger import save_models
+from ..visualize.plot import plotter, graph_summary
 
 # CUDA for PyTorch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -6,9 +6,9 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import RandomSampler
 
-from model.u_net import UNet
-from processing.augments import *
-from processing.load import DataTransformer
+from ..model.u_net import UNet
+from ..processing.augments import *
+from ..processing.load import DataTransformer
 
 torch.set_default_tensor_type('torch.FloatTensor')
 

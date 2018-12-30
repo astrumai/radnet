@@ -13,7 +13,8 @@ REQUIRED_PACKAGES = ['matplotlib',
                      'numpy',
                      'opencv-python>=3.3.0',
                      'torch',
-                     'torchvision']
+                     'torchvision',
+                     'pytest']
 
 setup(
     name="U-Net",

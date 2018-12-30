@@ -4,8 +4,8 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, Resize, ToTensor
 
-from processing.load import DataTransformer
-from utils.helpers import pred_to_numpy, load_model
+from ..processing.load import DataTransformer
+from ..utils.helpers import pred_to_numpy, load_model
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

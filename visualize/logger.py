@@ -1,8 +1,6 @@
-import torch
-import tensorflow as tf
 import numpy as np
-import scipy.misc
-from io import BytesIO
+import tensorflow as tf
+import torch
 
 
 class Logger(object):

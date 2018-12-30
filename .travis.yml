@@ -15,7 +15,8 @@ install:
   - pip install 'opencv-python>=3.3.0'
   - travis_wait pip install 'torch'
   - pip install 'torchvision'
+  - pip install 'pytest'
 
 script:
-  - python setup.py -mode train
+  - python setup.py
 
