@@ -38,7 +38,7 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'u_net_task = U-Net.trainer.task:main',
+            'u-net-task = trainer.task:main',
         ]
     },
     python_requires='>=3',
