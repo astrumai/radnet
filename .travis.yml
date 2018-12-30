@@ -18,4 +18,4 @@ install:
   - pip install 'pytest'
 
 script:
-  - cd trainer && python task.py test
+  - cd trainer && python task.py
