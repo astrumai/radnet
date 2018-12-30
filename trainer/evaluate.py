@@ -20,15 +20,20 @@ def evaluate(args):
 
     # load the saved model and start making predictions, if model is not present call training
     model = load_model(args)
+
+    # you need to use eval, it doesn't change the output in this case cz i dont have dropout or batchnorm and if i did
+    # model.eval would have taken care of it
+    model = model.eval()
     pred_list = []
-    for data in test_loader:
-        data = data.to(device)
-        # load the model for predictions
-        prediction = model(data)
-        # applies the sigmoid function to the output
-        labels = pred_to_numpy(prediction)
-        re_labels = labels.reshape((64, 64))
-        pred_list.append(re_labels)
+    with torch.no_grad():
+        for data in test_loader:
+            data = data.to(device)
+            # load the model for predictions
+            prediction = model(data)
+            # applies the sigmoid function to the output
+            labels = pred_to_numpy(prediction)
+            re_labels = labels.reshape((64, 64))
+            pred_list.append(re_labels)
 
     # save the predictions
     print("predictions complete")

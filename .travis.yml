@@ -4,11 +4,18 @@ python:
   - '3.6'
 
 install:
-  - pip install -r requirements.txt
+  - pip install 'matplotlib'
+  - pip install 'graphviz'
+  - pip install 'tensorflow'
+  - pip install 'scikit-learn'
+  - pip install 'tifffile'
+  - pip install 'Pillow'
+  - pip install 'scipy'
+  - pip install 'numpy'
   - pip install 'opencv-python>=3.3.0'
   - travis_wait pip install 'torch'
   - pip install 'torchvision'
 
 script:
-  - ./trainer/task.py
+  - python setup.py
 

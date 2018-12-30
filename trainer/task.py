@@ -12,7 +12,6 @@ if __name__ == '__main__' and __package__ is None:
     """ 
     Parse the arguments.
     """
-    # setting the hyper parameters
 
     """see to implement sub parsers for interpret and maybe train and evaluate as needed
     and also for hyperparameter.py """
@@ -26,7 +25,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--mode',
-                        default="interpret",
+                        default="train",
                         choices=['train', 'evaluate', 'interpret'],
                         type=str,
                         help='Choose between training and evaluating a trained model'
@@ -57,7 +56,7 @@ if __name__ == '__main__' and __package__ is None:
                         )
 
     parser.add_argument('--epochs',
-                        default=1000,
+                        default=2,
                         type=int
                         )
 

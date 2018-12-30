@@ -16,7 +16,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # variables
 best_loss = 1e10
-loss_bce = nn.BCEWithLogitsLoss()
+loss_criterion = nn.BCEWithLogitsLoss()
 loss_values = []
 threshold_value = 0.5
 
@@ -32,7 +32,7 @@ def validate_model(model, loader, threshold):
         prediction = model(val_batch)
 
         # call the loss function
-    loss = loss_bce(prediction, val_labels)
+    loss = loss_criterion(prediction, val_labels)
     pred_labels, true_labels = pred_to_numpy(prediction) > threshold, to_numpy(val_labels) > threshold
     dices = []
     for _pred, _labels in zip(pred_labels, true_labels):
@@ -54,7 +54,7 @@ def training_loop(train_loader, model, optim, val_loader, args):
             prediction = model(train_batch)
 
             # call the loss function
-            loss = loss_bce(prediction, train_labels)
+            loss = loss_criterion(prediction, train_labels)
             loss_values.append(loss)
 
             # backward pass
@@ -62,11 +62,12 @@ def training_loop(train_loader, model, optim, val_loader, args):
             loss.backward()
             optim.step()
 
-        # print the loss
-        train_dice, train_loss = validate_model(model, train_loader, threshold=threshold_value)
-        val_dice, val_loss = validate_model(model, val_loader, threshold=threshold_value)
-        print("===> Epoch {} Training Loss: {:.4f} : Mean Dice: {:.4f}".format(e, train_loss, train_dice))
-        print("===> Epoch {} Validation Loss: {:.4f} : Mean Dice: {:.4f} :".format(e, val_loss, val_dice))
+        with torch.no_grad():
+            train_dice, train_loss = validate_model(model, train_loader, threshold=threshold_value)
+            val_dice, val_loss = validate_model(model, val_loader, threshold=threshold_value)
+            # print the loss
+            print("===> Epoch {} Training Loss: {:.4f} : Mean Dice: {:.4f}".format(e, train_loss, train_dice))
+            print("===> Epoch {} Validation Loss: {:.4f} : Mean Dice: {:.4f} :".format(e, val_loss, val_dice))
 
         # log train history
         if args.log == 'yes':

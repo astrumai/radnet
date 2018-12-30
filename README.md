@@ -107,14 +107,19 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 ## Keep an eye out :eyes: for Upcoming Updates [![](https://img.shields.io/github/watchers/mukeshmithrakumar/U-Net.svg?label=Watch&style=social)](https://github.com/mukeshmithrakumar/U-Net/watchers)
 - finish visualize.py with individual layer visualization and upsampling blocks
 - write keys for arguments
-- work on the hyperparamters.py and config.py to write a script to tune hyperparameters
-- work on a biomedical image preprocessing script
-- finish unit_test.py
+- work on the hyperparamters.py and config.py to write a script to tune hyper parameters
+- add multi gpu capabilities
+- work on a biomedical image pre-processing script
+- write unit_test.py for the above
 - modify the unet to work on MRI data
 - test on the CHAOS Segmentation challenge
 - modify the unet to work on CT scan
 - test on the PAVES Segmentation challenge
 - write a neural architecture search script
-- One U-Net to segment different organs and a classifier to identify between the organs and another separate classifier to detect cancer cells
+- Build a classifier to identify between the organs (One U-Net to segment different organs) 
+- Build another separate classifier to identify different cells
 - Build the PyPI package
 - Write a demo in colab
+- Build a graphical user interface that for u-net
+- Abstract away the deep learning stuff so its not python/deep learning friendly but more like doctor friendly
+- Build into a software package
