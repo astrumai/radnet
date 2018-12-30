@@ -19,5 +19,4 @@ install:
   - pip install 'pytest-flake8'
 
 script:
-  - python setup.py build_run --inplace
-  - py.test --flake8 --forked
+  - python setup.py sdist
