@@ -18,4 +18,4 @@ install:
   - pip install 'pytest'
 
 script:
-  - python -m pytest ./trainer/task.py
+  - python -m unittest
