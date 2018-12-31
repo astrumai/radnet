@@ -20,4 +20,5 @@ install:
 
 script:
   - python setup.py sdist
-  - pytest setup.py
+  - cd pytorch_unet/trainer pytest train.py
+  - py.test --flake8
