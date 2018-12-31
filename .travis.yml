@@ -20,7 +20,5 @@ install:
 
 script:
   - python setup.py sdist
-  - cd pytorch_unet/trainer pytest train.py
-  - cd pytorch_unet/trainer pytest evaluate.py
-  - cd pytorch_unet/trainer pytest interpret.py
-  - py.test --flake8 pytorch_unet/
+  - cd pytorch_unet/trainer pytest train.py && pytest evaluate.py && pytest interpret.py
+  - flake8-max-line-length=119
