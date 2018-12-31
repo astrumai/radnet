@@ -1,14 +1,14 @@
 import tifffile as tiff
+import torch
 from PIL import Image
 from sklearn.model_selection import train_test_split
 from torch import nn
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import RandomSampler
-from torchvision.transforms import Resize, ToTensor
+from torchvision.transforms import Resize, ToTensor, Compose
 
 from pytorch_unet.model.u_net import UNet
-from pytorch_unet.processing.augments import *
 from pytorch_unet.processing.load import DataTransformer
 
 torch.set_default_tensor_type('torch.FloatTensor')
