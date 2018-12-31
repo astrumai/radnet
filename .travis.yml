@@ -16,7 +16,8 @@ install:
   - travis_wait pip install 'torch'
   - pip install 'torchvision'
   - pip install 'pytest'
-  - pip install 'pytest-flake8'
+  - pip install 'flake8'
 
 script:
   - python setup.py sdist
+  - pytest setup.py
