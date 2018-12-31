@@ -64,8 +64,8 @@ class DataTransformer(Dataset):
 def load_data(args):
     """Load data from here and return train loader and validation loader"""
     # get data set file path
-    data_path = os.path.join(args.root_dir, 'data', 'train-volume.tif')
-    labels_path = os.path.join(args.root_dir, 'data', 'train-labels.tif')
+    data_path = os.path.join(args.main_dir, 'data', 'train-volume.tif')
+    labels_path = os.path.join(args.main_dir, 'data', 'train-labels.tif')
 
     # compose the transforms for the train set
     train_data = Compose([Resize(args.image_size), ToTensor()])

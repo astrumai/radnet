@@ -20,7 +20,4 @@ install:
 
 script:
   - python setup.py sdist
-  - cd pytorch_unet/trainer pytest train.py
-  - cd pytorch_unet/trainer pytest evaluate.py
-  - cd pytorch_unet/trainer pytest interpret.py
   - flake8 --max-line-length=120 --ignore=E402

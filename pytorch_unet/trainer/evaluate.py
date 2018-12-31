@@ -19,9 +19,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Script for evaluating the trained model')
 
-    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", type=str,
-                        help='root directory')
-    parser.add_argument('--image_size', default=64, type=int, help='resize image size')
+    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", help='main directory')
+    parser.add_argument('--image_size', default=64, type=int, help='resize image size to match train image size')
     parser.add_argument('--weights_dir', default="./weights", type=str, help='Choose directory to save weights model')
 
     return parser.parse_args(args)
@@ -32,7 +31,7 @@ def main(args=None):
         args = sys.argv[1:]
     args = parse_args(args)
 
-    test_path = os.path.join(args.root_dir, 'data', 'test-volume.tif')
+    test_path = os.path.join(args.main_dir, 'data', 'test-volume.tif')
 
     # compose the transforms for the train set and transform to a 4D tensor
     test_data = Compose([Resize(args.image_size), ToTensor()])

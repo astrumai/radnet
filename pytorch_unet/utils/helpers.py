@@ -78,8 +78,19 @@ def plot_output(prediction):
     plt.show()
 
 
+def save_model(model, path, epoch, optimizer, best, loss):
+    if best:
+        print("===> Saving a new best model at epoch {}".format(epoch))
+        save_checkpoint = ({'model': model,
+                            'optimizer': optimizer,
+                            'epoch': epoch,
+                            'best_loss': loss
+                            }, best)
+        torch.save(save_checkpoint, path + "/unet_model.pt")
+
+
 def load_model(args):
-    checkpoint = os.path.join(args.weights_dir, "./u_net_model.pt")
+    checkpoint = os.path.join(args.weights_dir, "./unet_model.pt")
     if os.path.isfile(checkpoint):
         print("===> loading model '{}' ".format(checkpoint))
         model = torch.load(checkpoint)
@@ -87,6 +98,23 @@ def load_model(args):
     else:
         raise FileNotFoundError("===> no model found at {}. Check model path or start training".format(checkpoint))
     return model
+
+
+def resume_training(args):
+    """add in future"""
+    if args.resume == 'yes':
+        filename = os.path.join(args.weights_dir, "./unet_model.pt")
+        if os.path.isfile(filename):
+            print("===> loading checkpoint '{}' ".format(filename))
+            checkpoint = torch.load(filename)
+            start_epoch = checkpoint[0]['epoch']
+            model = checkpoint[0]['model']
+            optimizer = checkpoint[0]['optimizer']
+            loss = checkpoint[0]['loss']
+            print("===> loaded checkpoint '{}' (epoch {})".format(filename, start_epoch))
+        else:
+            raise FileNotFoundError("===> no model found at {}. Check model path or start training".format(filename))
+        return model, optimizer, loss, start_epoch
 
 
 def load_image(img_path, args):

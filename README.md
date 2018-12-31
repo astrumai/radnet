@@ -7,7 +7,7 @@ Pytorch implementation of U-Net
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.6](https://img.shields.io/badge/Python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Build Status](https://travis-ci.com/mukeshmithrakumar/U-Net.svg?branch=master)](https://travis-ci.com/mukeshmithrakumar/U-Net)
-
+[![Coverage Status](https://coveralls.io/repos/github/mukeshmithrakumar/UNet/badge.svg?branch=master)](https://coveralls.io/github/mukeshmithrakumar/UNet?branch=master)
 
 ### If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v: 
 [![](https://img.shields.io/github/stars/mukeshmithrakumar/U-Net.svg?label=Stars&style=social)](https://github.com/mukeshmithrakumar/U-Net/stargazers)
@@ -26,31 +26,32 @@ See Future Works for upcoming updates
 ### Folder Structure
 
 ```
-root_dir
+main_dir
     - data (The folder containing data files for training and testing)
-    - model (PyTorch u-net model)
-        - u_net.py
-    - optimize
-        - config.py
-        - hyperparameter.py
-    - processing
-        - augments.py
-        - load.py
-    - trainer
-        - train_logs (will be created)
-        - weights (will be created)
-        - evaluate.py
-        - task.py
-        - train.py
-    - utils
-        - helpers.py
-        - metrics.py
-        - proto.py
-        - unit_test.py
-    - visualize
-        - interpret.py
-        - logger.py
-        - plot.py
+    - pytorch_unet (Package directory)
+        - model (PyTorch u-net model)
+            - u_net.py
+        - optimize
+            - config.py
+            - hyperparameter.py
+        - processing
+            - augments.py
+            - load.py
+        - trainer
+            - train_logs (will be created)
+            - visualize (will be created)
+            - weights (will be created)
+            - evaluate.py
+            - interpret.py
+            - train.py
+        - utils
+            - helpers.py
+            - metrics.py
+            - proto.py
+            - unit_test.py
+        - visualize
+            - logger.py
+            - plot.py
 ```
 
 ## Usage
@@ -111,6 +112,7 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 - add multi gpu capabilities
 - work on a biomedical image pre-processing script
 - write unit_test.py for the above
+- add code coverage to check tests and iterate
 - modify the unet to work on MRI data
 - test on the CHAOS Segmentation challenge
 - modify the unet to work on CT scan

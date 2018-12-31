@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import torch
 
 
 class Logger(object):
@@ -55,21 +54,3 @@ class Logger(object):
         self.writer.flush()
 
 
-def save_models(model, path, epoch, optimizer, best, loss):
-    """
-    :param model:
-    :param path:
-    :param epoch:
-    :param optimizer:
-    :param best:
-    :param loss:
-    :return:
-    """
-    if best:
-        print("===> Saving a new best model at epoch {}".format(epoch))
-        save_checkpoint = ({'model': model,
-                            'optimizer': optimizer,
-                            'epoch': epoch,
-                            'best_loss': loss
-                            }, best)
-        torch.save(save_checkpoint, path + "/u_net_model.pt")

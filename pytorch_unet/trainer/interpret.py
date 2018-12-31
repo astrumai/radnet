@@ -20,8 +20,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Script for interpreting the trained model results')
 
-    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", type=str,
-                        help='root directory')
+    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", help='root directory')
     parser.add_argument('--interpret_path', default='./visualize', type=str,
                         help='Choose directory to save layer visualizations')
     parser.add_argument('--plot_interpret', default='block_filters', choices=['sensitivity', 'block_filters'], type=str,
@@ -82,7 +81,6 @@ def block_filters(model, img_path, args):
     input_img = img_tensor.unsqueeze(0).to(device)
 
     down_list = get_block_list(module_list, args, sampling='down')
-    up_list = get_block_list(module_list, args, sampling='up')
 
     dep_list = [down_list[0](input_img)]
     for i in range(1, len(down_list)):

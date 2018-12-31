@@ -7,11 +7,11 @@ class TestUNet(unittest.TestCase):
     # def test_data_transformer(self):
     #     """Test for data loader"""
     #
-    #     root_dir = "C:\\Users\\Mukesh\\Segmentation\\U-net\\"
-    #     # train_path = os.path.join(args.root_dir, 'data', 'train-volume.tif')
-    #     # labels_path = os.path.join(args.root_dir, 'data', 'train-labels.tif')
-    #     train_path = os.path.join(root_dir, 'data', 'train-volume.tif')
-    #     labels_path = os.path.join(root_dir, 'data', 'train-labels.tif')
+    #     main_dir = "C:\\Users\\Mukesh\\Segmentation\\U-net\\"
+    #     # train_path = os.path.join(args.main_dir, 'data', 'train-volume.tif')
+    #     # labels_path = os.path.join(args.main_dir, 'data', 'train-labels.tif')
+    #     train_path = os.path.join(main_dir, 'data', 'train-volume.tif')
+    #     labels_path = os.path.join(main_dir, 'data', 'train-labels.tif')
     #
     #     # transform = Compose([Resize(args.image_size), ToTensor()])
     #     transform = Compose([Resize(64), ToTensor()])

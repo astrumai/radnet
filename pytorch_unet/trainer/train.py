@@ -14,10 +14,9 @@ if __name__ == '__main__' and __package__ is None:
 
 from pytorch_unet.model.u_net import UNet
 from pytorch_unet.processing.load import load_data
-from pytorch_unet.utils.helpers import pred_to_numpy, to_numpy
+from pytorch_unet.utils.helpers import pred_to_numpy, to_numpy, save_model
 from pytorch_unet.utils.metrics import dice
 from pytorch_unet.visualize.logger import Logger
-from pytorch_unet.visualize.logger import save_models
 from pytorch_unet.visualize.plot import plotter, graph_summary
 
 # CUDA for PyTorch
@@ -33,8 +32,9 @@ threshold_value = 0.5
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Script for training the model')
 
-    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", type=str,
-                        help='root directory')
+    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", help='main directory')
+    parser.add_argument('--resume', default='no', choices=['yes', 'no'], type=str,
+                        help='Choose to start training from checkpoint')
     parser.add_argument('--weights_dir', default="./weights", type=str, help='Choose directory to save weights model')
     parser.add_argument('--log_dir', default="./train_logs", type=str, help='Choose directory to save the logs')
     parser.add_argument('--image_size', default=64, type=int, help='resize image size')
@@ -115,7 +115,7 @@ def training_loop(train_loader, model, optim, val_loader, args):
         # save model with best score
         is_best = val_loss < best_loss
         best_loss = min(val_loss, best_loss)
-        save_models(model=model, path=args.weights_dir, epoch=e + 1, optimizer=optim, best=is_best, loss=best_loss)
+        save_model(model=model, path=args.weights_dir, epoch=e + 1, optimizer=optim, best=is_best, loss=best_loss)
 
     return prediction
 
