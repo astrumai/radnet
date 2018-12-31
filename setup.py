@@ -1,35 +1,4 @@
-from distutils.command.build_ext import build_ext as distutils_build_ext
-
-from setuptools import find_packages, setup, Command
-
-
-class BuildRun(Command):
-    description = distutils_build_ext.description
-    user_options = distutils_build_ext.user_options
-    boolean_options = distutils_build_ext.boolean_options
-    help_options = distutils_build_ext.help_options
-
-    def __init__(self, dist, *args, **kwargs):
-        super().__init__(dist, **kwargs)
-        from setuptools.command.build_ext import build_ext as setuptools_build_ext
-
-        # Bypass __setatrr__ to avoid infinite recursion.
-        self.__dict__['_command'] = setuptools_build_ext(*args, **kwargs)
-
-    def __getattr__(self, name):
-        return getattr(self._command, name)
-
-    def __setattr__(self, name, value):
-        setattr(self._command, name, value)
-
-    def initialize_options(self, *args, **kwargs):
-        return self._command.initialize_options(*args, **kwargs)
-
-    def finalize_options(self, *args, **kwargs):
-        pass
-
-    def run(self, *args, **kwargs):
-        return self._command.run(*args, **kwargs)
+from setuptools import find_packages, setup
 
 
 with open("README.md", "r") as fh:
@@ -45,8 +14,7 @@ REQUIRED_PACKAGES = ['matplotlib',
                      'numpy',
                      'opencv-python>=3.3.0',
                      'torch',
-                     'torchvision',
-                     'pytest']
+                     'torchvision']
 
 setup(
     name="rad_net",
@@ -77,5 +45,4 @@ setup(
         ]
     },
     python_requires='>=3',
-    cmdclass={'build_run': BuildRun}
 )
