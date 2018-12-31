@@ -21,4 +21,6 @@ install:
 script:
   - python setup.py sdist
   - cd pytorch_unet/trainer pytest train.py
-  - py.test --flake8
+  - cd pytorch_unet/trainer pytest evaluate.py
+  - cd pytorch_unet/trainer pytest interpret.py
+  - py.test --flake8 pytorch_unet/
