@@ -16,12 +16,11 @@ Pytorch implementation of U-Net
 ### For any questions and collaborations you can reach me via: [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5)](https://www.linkedin.com/in/mukesh-mithrakumar/)
 
 ## (Work in Progress)
-
-The __Goal__ of the project is to develop a generalizable model to assist in the evaluation of lesions 
-(e.g. benign and malignant tumors, multiple sclerosis and cysts) in CT and MRI scans for multiple organs.
+The __Goal__ of the project is to develop an open source software package to assist radiologists in the evaluation of 
+lesions in CT and MRI scans for multiple organs.
 
 Currently the code works for the ISBI Neuronal Stack Segmentation dataset. 
-See Future Works for upcoming updates
+See upcoming updates for more info
 
 ### Folder Structure
 

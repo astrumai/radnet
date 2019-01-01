@@ -17,7 +17,7 @@ REQUIRED_PACKAGES = ['matplotlib',
                      'torchvision']
 
 setup(
-    name="rad_net",
+    name="radnet",
     version="0.1.0",
     author="Mukesh Mithrakumar",
     author_email="mukesh.mithrakumar@jacks.sdstate.edu",
