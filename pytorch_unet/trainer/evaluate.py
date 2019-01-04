@@ -19,7 +19,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Script for evaluating the trained model')
 
-    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", help='main directory')
+    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\radnet\\", help='main directory')
     parser.add_argument('--image_size', default=64, type=int, help='resize image size to match train image size')
     parser.add_argument('--weights_dir', default="./weights", type=str, help='Choose directory to save weights model')
 

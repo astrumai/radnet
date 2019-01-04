@@ -6,6 +6,7 @@ from math import sqrt
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import torch.nn.functional as F
 from torch.autograd import Variable
 
 if __name__ == '__main__' and __package__ is None:
@@ -20,9 +21,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Script for interpreting the trained model results')
 
-    parser.add_argument('--root_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", help='root directory')
+    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\radnet\\", help='main directory')
     parser.add_argument('--interpret_path', default='./visualize', type=str,
                         help='Choose directory to save layer visualizations')
+    parser.add_argument('--weights_dir', default="./weights", type=str, help='Choose directory to load weights from')
+    parser.add_argument('--image_size', default=64, type=int, help='resize image size')
+    parser.add_argument('--depth', default=3, type=int, help='Number of downsampling/upsampling blocks')
     parser.add_argument('--plot_interpret', default='block_filters', choices=['sensitivity', 'block_filters'], type=str,
                         help='Type of interpret to plot')
     parser.add_argument('--plot_size', default=128, type=int, help='Image size of sensitivity analysis')
@@ -42,25 +46,32 @@ def get_values(iterables, key_to_find):
     return list(filter(lambda z: key_to_find in z, iterables))
 
 
-def get_block_list(child_list, args, sampling):
-    block_list = []
-    if sampling == 'down':
-        down_seq = []
-        for y in range(args.depth):
-            down_seq.append(get_values(child_list, '{}_path.{}'.format(sampling, y)))
+def do_pooling(dep, d):
+    if (dep - 1) == 1:
+        return F.avg_pool2d(d, 2)
+    else:
+        return F.avg_pool2d(do_pooling(dep - 1, d), 2)
 
-        for x in range(args.depth):
-            block_list.append(down_seq[x][0][1])
 
-    elif sampling == 'up':
-        up_seq = []
-        for y in range(args.depth - 1):
-            up_seq.append(get_values(child_list, '{}_path.{}'.format(sampling, y)))
+def get_block_list(child_list, args):
+    down_block_list = []
+    up_block_list = []
+    down_seq = []
+    up_seq = []
 
-        for x in range(args.depth - 1):
-            block_list.append(up_seq[x][0][1])
+    for y in range(args.depth):
+        down_seq.append(get_values(child_list, 'down_path.{}'.format(y)))
 
-    return block_list
+    for x in range(args.depth):
+        down_block_list.append(down_seq[x][0][1])
+
+    for y in range(args.depth - 1):
+        up_seq.append(get_values(child_list, 'up_path.{}'.format(y)))
+
+    for x in range(args.depth - 1):
+        up_block_list.append(up_seq[x][0][1])
+
+    return down_block_list, up_block_list
 
 
 def plot_block(args, block, img_size, name):
@@ -80,15 +91,33 @@ def block_filters(model, img_path, args):
     img_tensor, _ = load_image(img_path, args)
     input_img = img_tensor.unsqueeze(0).to(device)
 
-    down_list = get_block_list(module_list, args, sampling='down')
+    down_list, up_list = get_block_list(module_list, args)
 
     dep_list = [down_list[0](input_img)]
     for i in range(1, len(down_list)):
         layer = down_list[i](dep_list[i - 1])
         dep_list.append(layer)
 
+    # call plotting for down block
     for j, m in zip(range(len(dep_list)), [64, 128, 256]):
         plot_block(args, dep_list[j], m, name='down')
+
+    # apply pooling to everything inside dep list cause module list doesn't have pooling layers in it
+    pooled = []
+    for i in range(0, len(dep_list)):
+        x = F.avg_pool2d(dep_list[i], 2)
+        pooled.append(x)
+
+    up_block = []
+    reversed_uplist = up_list[::-1]
+    for i in range(len(up_list)):
+        pools = do_pooling(args.depth, dep_list[i + 1])
+        up_layer = reversed_uplist[i](pools, F.avg_pool2d(dep_list[i], 2))
+        up_block.append(up_layer)
+
+    # call plotting for down block
+    for j, m in zip(range(len(up_list)), [16, 32]):
+        plot_block(args, up_block[j], m, name='up')
 
 
 def sensitivity_analysis(model, image_tensor, target_class=None, postprocess='abs'):
@@ -156,7 +185,7 @@ def main(args=None):
         os.makedirs(args.interpret_path)
 
     model = load_model(args)
-    img_path = os.path.join(args.root_dir, 'data', 'test-volume.tif')
+    img_path = os.path.join(args.main_dir, 'data', 'test-volume.tif')
 
     if args.plot_interpret == 'sensitivity':
         plot_sensitivity(img_path, model, args)
