@@ -101,11 +101,10 @@ To visualize the weight output of each downsampling block run:
 ```
 task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block_filters
 ```
-<p align="center"><img width="80%" src="logo/block_filters.gif" /></p>
+<p align="center"><img width="80%" src="logo/filters.gif" /></p>
 
 
 ## Keep an eye out :eyes: for Upcoming Updates [![](https://img.shields.io/github/watchers/mukeshmithrakumar/U-Net.svg?label=Watch&style=social)](https://github.com/mukeshmithrakumar/U-Net/watchers)
-- finish visualize.py with individual layer visualization and upsampling blocks
 - work on the hyperparamters.py and config.py to write a script to tune hyper parameters
 - add multi gpu capabilities
 - work on a biomedical image pre-processing script
