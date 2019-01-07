@@ -59,7 +59,20 @@ def parse_args(args):
 
 
 def validate_model(model, loader, threshold):
-    """ Contains the validation loop"""
+    """Contains the validation loop.
+    Note:
+        The model needs to be changes to eval mode to switch off dropout and batchnorm in pytorch. Then we iterate
+        through the data and send the data to GPU using to(device) and then make the predictions and calculate the
+        loss. Then pred_to_numpy applies sigmoid to the prediction greater than a certain threshold. This sigmoid is
+        added to get the values between [0, 1]. Then the predicted labels and the true labels are used to calculate
+        the dice value.
+    :param model        : The model to be evaluated.
+    :param loader       : data from the loader
+    :param threshold    : to select predictions
+
+    :return             : the dice score and the loss
+    """
+
     model = model.eval()
     for i, data in enumerate(loader):
         val_batch, val_labels = data
@@ -79,7 +92,18 @@ def validate_model(model, loader, threshold):
 
 
 def training_loop(train_loader, model, optim, val_loader, args):
-    """Contains the training loop"""
+    """Contains the training loop.
+    :param train_loader         : takes the train data from the data loader.
+    :param model                : model to be used for training.
+    :param optim                : optimizer to be used.
+    :param val_loader           : takes the validation data from the data loader.
+    :param args:
+        epochs (int)            : number of epochs to train.
+        logs (bool)             : if yes, will start logging
+        weights_dir (string)    : path to store the weights
+
+    :return                     : predictions
+    """
     global best_loss
 
     for e in range(args.epochs):
@@ -121,16 +145,21 @@ def training_loop(train_loader, model, optim, val_loader, args):
 
 
 def main(args=None):
+    """Contains the main function to start training."""
+
     if args is None:
         args = sys.argv[1:]
     args = parse_args(args)
 
+    # creates a weight directory to store weights if a directory doesn't exist
     if not os.path.exists(args.weights_dir):
         os.makedirs(args.weights_dir)
 
+    # creates a log directory to store logs if a directory doesn't exist
     if not os.path.exists(args.log_dir):
         os.makedirs(args.log_dir)
 
+    # loading train and validation data
     train_loader, val_loader = load_data(args)
 
     # create the model
@@ -144,11 +173,13 @@ def main(args=None):
     prediction = training_loop(train_loader, model, optim, val_loader, args)
     print("Training Done!")
 
+    # if you specify logging, provides info to access the logs and visualize using tensorboard
     if args.log == 'yes':
         print("\nTo view the logs run tensorboard in your command line from the trainer folder"
               ": tensorboard --logdir=train_logs/ --port=6006"
               "\nYou can view the results at:  http://localhost:6006")
 
+    # build the pytorch model static graph
     if args.build_graph == 'yes':
         graph = graph_summary(prediction.mean(), params=dict(model.named_parameters()))
         graph.format = 'png'

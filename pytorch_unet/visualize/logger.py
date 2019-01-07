@@ -3,36 +3,23 @@ import tensorflow as tf
 
 
 class Logger(object):
-    """
-    Arguments:
-
-    Returns:
-
-    Note: Code referenced from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514
-
+    """Logs values to be visualized in the tensorboard.
+    Note:
+        Code referenced from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514
     """
 
     def __init__(self, log_dir):
         self.writer = tf.summary.FileWriter(log_dir)
 
     def scalar_summary(self, tag, value, step):
-        """
-        :param tag:
-        :param value:
-        :param step:
-        :return:
-        """
+        """Adds scalar summary to the tensorboard"""
+
         summary = tf.Summary(value=[tf.Summary.Value(tag=tag, simple_value=value)])
         self.writer.add_summary(summary, step)
 
     def histo_summary(self, tag, values, step, bins=1000):
-        """
-        :param tag:
-        :param values:
-        :param step:
-        :param bins:
-        :return:
-        """
+        """Adds histogram to the tensorboard"""
+
         counts, bin_edges = np.histogram(values, bins=bins)
 
         hist = tf.HistogramProto()

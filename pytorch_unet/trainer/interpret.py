@@ -43,10 +43,12 @@ def all_children(mod):
 
 
 def get_values(iterables, key_to_find):
+    """Get values for the child list."""
     return list(filter(lambda z: key_to_find in z, iterables))
 
 
 def do_pooling(dep, d):
+    """The named_modules isn't storing the pooling layers so this is a function to add pooling when plotting filers."""
     if (dep - 1) == 1:
         return F.avg_pool2d(d, 2)
     else:
@@ -54,6 +56,13 @@ def do_pooling(dep, d):
 
 
 def get_block_list(child_list, args):
+    """Function to get the block list.
+    Note:
+        Depending on the depth of the unet and based on how the module path is saved, you go into the blocks and fetch
+        down and up path blocks and append it into a list. The '[x][0][1]' is because of how the named_modules is
+        returned.
+    """
+
     down_block_list = []
     up_block_list = []
     down_seq = []
@@ -75,6 +84,8 @@ def get_block_list(child_list, args):
 
 
 def plot_block(args, block, img_size, name):
+    """Function to save the filter plots."""
+
     fig = plt.figure()
     plt.rcParams["figure.figsize"] = (50, 50)
 
@@ -87,6 +98,15 @@ def plot_block(args, block, img_size, name):
 
 
 def block_filters(model, img_path, args):
+    """Function that activates block filer visualization.
+    Note:
+        You first take the module list of all the children and using the get_block_list function you separate the list
+        into down and up list and then you go into the down list and get individual blocks and append into the depth
+        list. Then using plot_block you plot individual filters iteratively. For up blocks, I call pooling for the
+        down blocks to be able to center crop it and concatenate it to be able to upsample. This is done because of
+        how the forward block is written in the unet upsampling module.
+    """
+
     module_list = all_children(model)
     img_tensor, _ = load_image(img_path, args)
     input_img = img_tensor.unsqueeze(0).to(device)
@@ -121,17 +141,21 @@ def block_filters(model, img_path, args):
 
 
 def sensitivity_analysis(model, image_tensor, target_class=None, postprocess='abs'):
-    """
+    """Sensitivity analysis function.
     Note:
-        Code is based on "https://github.com/jrieke/cnn-interpretability/blob/master/interpretation.py"
-    :param model:
-    :param image_tensor:
-    :param target_class:
-    :param postprocess:
-    :return:
+        Code is based on "https://github.com/jrieke/cnn-interpretability/blob/master/interpretation.py".
+        Perform sensitivity analysis (via backpropagation; Simonyan et al. 2014) to determine the relevance of
+        each image pixel for the classification decision. Return a relevance heatmap over the input image.
+        You start by converting the image to tensor and then add a dimension to simulate the batch. Then you move
+        the model to cpu and start eval mode and send in the image tensor through the model and get the output
+        class pixel by pixel. Next we zero grad the model because pytorch accumulates the gradients on subsequent
+        backward passes and one hot encode the output and using pytorch .backward you calculate the sum of gradients of
+        a given tensor (one hot output) w.r.t the graph leaves. Finally using the .grad function you calculate the
+        gradient of the input variable w.r.t the gradient found through backward pass, thereby comparing each.
     """
-    image_tensor = torch.Tensor(image_tensor)  # convert numpy or list to tensor
-    X = Variable(image_tensor[None], requires_grad=True)  # add dimension to simulate batch
+
+    image_tensor = torch.Tensor(image_tensor)
+    X = Variable(image_tensor[None], requires_grad=True)
     model = model.cpu()
     model.eval()
     output = model(X)
@@ -159,6 +183,8 @@ def sensitivity_analysis(model, image_tensor, target_class=None, postprocess='ab
 
 
 def plot_sensitivity(img_path, model, args):
+    """Function to save the sensitivity plot."""
+
     img_tensor, img = load_image(img_path, args)
 
     _mapped = sensitivity_analysis(model, img_tensor)
@@ -177,6 +203,14 @@ def plot_sensitivity(img_path, model, args):
 
 
 def main(args=None):
+    """Contains the main function to start the interpretation.
+    Note:
+        The data is in volume format hence for demo purposes I only took one image to interpret so if this code is
+        applied to another dataset that needs to be changed. You can change it by simply going to load_image in the
+        helpers.py and removing the index[1]. When I start working on different datasets, I will modify this
+        accordingly.
+    """
+
     if args is None:
         args = sys.argv[1:]
     args = parse_args(args)

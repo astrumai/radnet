@@ -27,6 +27,16 @@ def parse_args(args):
 
 
 def main(args=None):
+    """Contains the main function to start evaluation.
+    Note:
+        The test volume is loaded and the images are resized according to the training image size and then sent through
+        the data transformer with labels filename is set to none to specify evaluation mode. the data is loaded through
+        the data loader and no sampling or batch size is used since the data set size is small and applying sequential
+        sampler would be redundant and any other sampler wouldn't do much good. Then the saved model is loaded and set
+        to eval mode and the predictions are made and a sigmoid is applied to change the output to [0, 1] and the
+        prediction labels are appended to the pred_list.
+    """
+
     if args is None:
         args = sys.argv[1:]
     args = parse_args(args)
@@ -39,12 +49,12 @@ def main(args=None):
                                      image_augmentation=None)
     test_loader = DataLoader(test_transform)
 
-    # load the saved model and start making predictions, if model is not present call training
+    # load the saved model
     model = load_model(args)
 
-    # you need to use eval, it doesn't change the output in this case cz i dont have dropout or batchnorm and if i did
-    # model.eval would have taken care of it
+    # set model to eval mode
     model = model.eval()
+
     pred_list = []
     with torch.no_grad():
         for data in test_loader:

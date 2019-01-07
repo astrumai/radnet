@@ -4,26 +4,22 @@ from torch import nn
 
 
 class UNet(nn.Module):
-    """ U-Net implementation
+    """U-Net implementation.
     Note:
         You need the forward function here since the ModuleList doesn't have a forward method
-        and it is just a python list
+        and it is just a python list.
     Arguments:
-        in_channels (int): number of input channels
-        n_classes (int): number of output channels
-        depth (int): depth of the network
-        wf (int): number of filters in the first layer is 2**wf
-        padding (bool): if True, apply padding such that the input shape
-                        is the same as the output.
-                        This may introduce artifacts
-        batch_norm (bool): Use BatchNorm after layers with an
-                           activation function
-        up_mode (str): one of 'upconv' or 'upsample'.
-                       'upconv' will use transposed convolutions for
-                       learned upsampling.
-                       'upsample' will use bilinear upsampling.
-
+        in_channels (int)   : number of input filter channels.
+        n_classes (int)     : number of classes to predict.
+        depth (int)         : depth of the network given in terms of blocks.
+        wf (int)            : number of filters in the first layer.
+        padding (bool)      : if True, apply padding such that the input shape is the same as the output.
+        batch_norm (bool)   : Use BatchNorm after layers with an activation function.
+        up_mode (str)       : one of 'upconv' or 'upsample'.
+                                'upconv' will use transposed convolutions for learned upsampling.
+                                'upsample' will use bilinear upsampling.
     Returns:
+        The complete unet block.
     """
 
     def __init__(self, in_channels=1, n_classes=2, depth=5, wf=6, padding=False, batch_norm=False, up_mode='upconv'):
@@ -61,16 +57,16 @@ class UNet(nn.Module):
 
 
 class UNetConvBlock(nn.Module):
-    """ Implementation of the down convolution of the U-Net convolution block
+    """Implementation of the down convolution of the U-Net convolution block.
     Note:
-        Sequential does have a forward function but I think you are calling the forward here since Module needs
-        the forward function to instantiate the block
+        Creates a down conv block with conv2d layers and relu layers using sequential.
     Arguments:
-        in_size:
-        padding (int):
-        batch_norm ():
-
-    Return:
+        in_size (int)       : input size of the 4D tensor with [N,C,H,W].
+        out_size (int)      : output size of the 4D tensor with [N,C,H,W].
+        padding (bool)      : if True, apply padding such that the input shape is the same as the output.
+        batch_norm (bool)   : Use BatchNorm after layers with an activation function.
+    Returns:
+        A Unet conv block with relu function and batch norm if batch norm is set to True.
     """
 
     def __init__(self, in_size, out_size, padding, batch_norm):
@@ -95,12 +91,20 @@ class UNetConvBlock(nn.Module):
 
 
 class UNetUpBlock(nn.Module):
-    """Implementation of the Up convolutional U-net block
+    """Implementation of the Up convolutional U-net block.
     Note:
-
+        Creates the upsampling block by either using transposed convolution or upsampling and the function center crop
+        takes the output of the down block and center crops it and concatenates it to the respective up conv block.
     Arguments:
-
-    Return:
+        in_size (int)       : input size of the 4D tensor with [N,C,H,W].
+        out_size (int)      : output size of the 4D tensor with [N,C,H,W].
+        up_mode (str)       : one of 'upconv' or 'upsample'.
+                                'upconv' will use transposed convolutions for learned upsampling.
+                                'upsample' will use bilinear upsampling.
+        padding (bool)      : if True, apply padding such that the input shape is the same as the output.
+        batch_norm (bool)   : Use BatchNorm after layers with an activation function.
+    Returns:
+        The Up sampling block.
     """
 
     def __init__(self, in_size, out_size, up_mode, padding, batch_norm):

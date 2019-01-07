@@ -13,12 +13,18 @@ from pytorch_unet.processing.augments import augmentations
 
 
 class DataTransformer(Dataset):
-    """ Dataset loader to pass to the pytorch DataLoader
+    """Dataset loader to pass to the pytorch DataLoader.
+    Note:
+        This is an abstract class representing a dataset. You don't have to write a function like this but it helps
+        in applying transformations to the dataset and in supplying the dataset to the data loader, which is where
+        all these transformations are actually applied.
     Arguments:
-          train_filename :
-          labels_filename:
+        train_filename (string)     : is the path to the training data.
+        labels_filename (string)    : is the path to the labels for the training data.
+        image_transform (tensor)    : is data in the tensor format to be used to apply transformation.
+        image_augmentation (tensor) : is a set of transformations to be applied to the data.
     Returns:
-        a list of train_images, train_labels 4D tensor tuples
+        the dataset.
     """
 
     def __init__(self, train_filename, labels_filename, image_transform=None, image_augmentation=None):
@@ -62,7 +68,22 @@ class DataTransformer(Dataset):
 
 
 def load_data(args):
-    """Load data from here and return train loader and validation loader"""
+    """Load data from here and return.
+    Note:
+        Compose Composes several transforms together and if augmentation is chosen you compose an additional
+        bunch of transforms to be applied to the train data and you send this to the DataTransformer class
+        which returns the data set that is used in the data loader. The data loader then takes in this dataset with a
+        batch size and sampler. Sampler is defines the strategy to draw samples from the dataset. Here for training
+        data random sampling is used and for validation sequential is used. You can also write a custom sampler class
+        if you want.
+    :param args:
+        main_dir (string)       : path to the main directory from the args.
+        image_size (int)        : size of the image to be resized.
+        transform_prob (float)  : probability to apply transformations on the data.
+        batch_size (int)        : batch size to be used in the data loader.
+    :return:
+        the train loader and validation loader to be used for training and validating.
+    """
     # get data set file path
     data_path = os.path.join(args.main_dir, 'data', 'train-volume.tif')
     labels_path = os.path.join(args.main_dir, 'data', 'train-labels.tif')

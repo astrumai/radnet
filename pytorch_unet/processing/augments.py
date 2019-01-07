@@ -25,13 +25,6 @@ class PrepareImageAndMask(object):
 
 
 def to_tensor(pic):
-    """Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor.
-    Modified from PyTorch vision ``ToTensor`` .
-    Args:
-        pic (PIL Image or numpy.ndarray): Image to be converted to tensor.
-    Returns:
-        Tensor: Converted image.
-    """
     if isinstance(pic, np.ndarray):
         # handle numpy array
         img = torch.from_numpy(pic.transpose((0, 1, 2)))
@@ -43,6 +36,12 @@ def to_tensor(pic):
 
 
 class ConvertToTensor(object):
+    """ Converts the image to tensor.
+    Note:
+        Modified from PyTorch vision ToTensor. Converts a PIL Image or numpy.ndarray (H x W x C) in the
+        range [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0] by calling the
+        to_tensor function.
+    """
     def __call__(self, data):
         trans_images_arr = np.expand_dims(data['input'], axis=0)
         trans_labels_arr = np.expand_dims(data['mask'], axis=0)
@@ -52,7 +51,10 @@ class ConvertToTensor(object):
 
 
 class ResizeToNxN(object):
-    """Resize input images to rgb NxN and the masks into gray NxN."""
+    """Resize input images to rgb NxN and the masks into gray NxN.
+     Note:
+         uses cv2.INTER_LINEAR which implements bilinear interpolation for resizing.
+    """
 
     def __init__(self, n=128):
         self.n = n
@@ -83,7 +85,10 @@ def compute_padding(h, w, n=128):
 
 
 class PadToNxN(object):
-    """Pad to image size NxN using border reflection."""
+    """Apply Pad to image size NxN using border reflection.
+    Note:
+        uses copyMakeBorder which and BORDER_REFLECT_101 which basically reflects the border of the image to pad.
+    """
 
     def __init__(self, n=128):
         self.n = n
@@ -108,7 +113,11 @@ class HorizontalFlip(object):
 
 
 class BrightnessShift(object):
-    """Brightness shift."""
+    """Applies Brightness shift to the images.
+    Note:
+        When changing the brightness of an image, a constant is added or subtracted from the luminnance of all
+        sample values. Here we are shifting the histogram left (subtraction) or right (addition) by a max value.
+    """
 
     def __init__(self, max_value=0.1):
         self.max_value = max_value
@@ -121,7 +130,10 @@ class BrightnessShift(object):
 
 
 class BrightnessScaling(object):
-    """Brightness scaling."""
+    """Applies Brightness scaling to the images.
+    Note:
+        Brightness scaling scales the histogram by a max value.
+    """
 
     def __init__(self, max_value=0.08):
         self.max_value = max_value
@@ -134,7 +146,10 @@ class BrightnessScaling(object):
 
 
 class GammaChange(object):
-    """Gamma change."""
+    """Applies Gamma change to the images.
+    Note:
+        is a nonlinear operation used to encode and decode luminance values in images.
+    """
 
     def __init__(self, max_value=0.08):
         self.max_value = max_value
@@ -147,8 +162,6 @@ class GammaChange(object):
 
 
 def do_elastic_transform(image, mask, grid=10, distort=0.2):
-    # https://www.kaggle.com/ori226/data-augmentation-with-elastic-deformations
-    # https://github.com/letmaik/lensfunpy/blob/master/lensfunpy/util.py
     height, width = image.shape[:2]
 
     x_step = int(grid)
@@ -196,7 +209,11 @@ def do_elastic_transform(image, mask, grid=10, distort=0.2):
 
 
 class ElasticDeformation(object):
-    """Elastic deformation."""
+    """Applies Elastic deformation to the images.
+    Note:
+        Elastic deformation of images as described in [Simard2003]_ (with modifications).
+        Based on https://gist.github.com/erniejunior/601cdf56d2b424757de5
+    """
 
     def __init__(self, grid=10, max_distort=0.15):
         self.grid = grid
@@ -236,7 +253,10 @@ def do_rotation_transform(image, mask, angle=0):
 
 
 class Rotation(object):
-    """Rotation."""
+    """Applies to the Rotation to the images.
+    Note:
+        Does rotation transformation.
+    """
 
     def __init__(self, max_angle=15):
         self.max_angle = max_angle
@@ -270,7 +290,11 @@ def do_horizontal_shear(image, mask, scale=0):
 
 
 class HorizontalShear(object):
-
+    """Applies Horizontal Shear to the images.
+    Note:
+        horizontal shear (or shear parallel to the x axis) is a function that takes a generic point with coordinates
+        (x,y) to the point (x+my,y); where m is a fixed parameter, called the shear factor.
+    """
     def __init__(self, max_scale=0.2):
         self.max_scale = max_scale
 
@@ -284,21 +308,25 @@ class HorizontalShear(object):
 
 
 class HWCtoCHW(object):
+    """Converts HWC to CHW."""
     def __call__(self, data):
         data['input'] = data['input'].transpose((2, 0, 1))
         return data
 
 
-# https://github.com/tugstugi/pytorch-saltnet/blob/master/train.py
 def augmentations(args):
-    """Augmentations for the input images
-    Arguments:
-
-
-    Returns:
-
+    """Applies random augmentations for the input images based on the transform probability.
     Note:
+        Many methods are taken from https://www.kaggle.com/c/tgs-salt-identification-challenge/discussion/63974.
+        The user can specify between geometric, image or both types of transforms to the images since sometimes
+        some transformations work well for certain datasets.
+    :param args:
+        image_size (int)        : size of the image to be resized.
+        transform_prob (float)  : probability to apply transformations on the data.
+    :return:
+        a compose of transformations.
     """
+
     augment_type = 'geometric'
     transform_prob = args.transform_prob
     if augment_type == 'geometric':

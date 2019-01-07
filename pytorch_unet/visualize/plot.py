@@ -7,6 +7,8 @@ from torch.autograd import Variable
 
 
 def plotter(log, train_loss, train_dice, val_loss, val_dice, step, model):
+    """Plots the log values in tensorboard."""
+
     train_loss = np.around(train_loss, decimals=5)
     train_dice = np.around(train_dice, decimals=5)
     val_loss = np.around(val_loss, decimals=5)
@@ -28,18 +30,25 @@ def plotter(log, train_loss, train_dice, val_loss, val_dice, step, model):
 Node = namedtuple('Node', ('name', 'inputs', 'attr', 'op'))
 
 
+def resize_graph(dot, size_per_element=0.5, min_size=12):
+    """Resize the graph according to how much content it contains. Modify the graph in place."""
+    # Get the approximate number of nodes and edges
+    num_rows = len(dot.body)
+    content_size = num_rows * size_per_element
+    size = max(min_size, content_size)
+    size_str = str(size) + "," + str(size)
+    dot.graph_attr.update(size=size_str)
+
+
 def graph_summary(var, params=None):
     """ Produces Graphviz representation of PyTorch autograd graph.
-
-    Blue nodes are the Variables that require grad, orange are Tensors
-    saved for backward in torch.autograd.Function
-
-    Args:
-        var: output Variable
-        params: dict of (name, Variable) to add names to node that
-            require grad
-
-    Note: Code referenced from https://github.com/szagoruyko/pytorchviz
+    Note:
+        Code referenced from https://github.com/szagoruyko/pytorchviz
+        Blue nodes are the Variables that require grad, orange are Tensors saved for backward
+        in torch.autograd.Function
+    Arguments:
+        var         : output Variable
+        params      : dict of (name, Variable) to add names to node that require grad
     """
     if params is not None:
         assert all(isinstance(p, Variable) for p in params.values())
@@ -55,7 +64,7 @@ def graph_summary(var, params=None):
     seen = set()
 
     def size_to_str(size):
-        return '(' + (', ').join(['%d' % v for v in size]) + ')'
+        return '(' + ', '.join(['%d' % v for v in size]) + ')'
 
     output_nodes = (var.grad_fn,) if not isinstance(var, tuple) else tuple(v.grad_fn for v in var)
 
@@ -96,15 +105,3 @@ def graph_summary(var, params=None):
 
     return dot
 
-
-def resize_graph(dot, size_per_element=0.5, min_size=12):
-    """Resize the graph according to how much content it contains.
-
-    Modify the graph in place.
-    """
-    # Get the approximate number of nodes and edges
-    num_rows = len(dot.body)
-    content_size = num_rows * size_per_element
-    size = max(min_size, content_size)
-    size_str = str(size) + "," + str(size)
-    dot.graph_attr.update(size=size_str)
