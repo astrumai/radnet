@@ -61,6 +61,53 @@ To train the model run:
 task.py root_dir(path/to/root directory)
 ```
 
+Arguments that can be specified in the training mode:
+```
+usage: train.py [-h] [--main_dir MAIN_DIR] [--resume {yes,no}]
+                [--weights_dir WEIGHTS_DIR] [--log_dir LOG_DIR]
+                [--image_size IMAGE_SIZE] [--batch_size BATCH_SIZE]
+                [--epochs EPOCHS] [--depth DEPTH] [--n_classes N_CLASSES]
+                [--up_mode {upconv, upsample}] [--augment {yes, no}]
+                [--augment_type {geometric, image, both}]
+                [--transform_prob TRANSFORM_PROB] [--test_size TEST_SIZE]
+                [--log {yes,no}] [--build_graph {yes,no}]
+
+Script for training the model
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --main_dir MAIN_DIR   main directory
+  --resume {yes,no}     Choose to start training from checkpoint
+  --weights_dir WEIGHTS_DIR
+                        Choose directory to save weights model
+  --log_dir LOG_DIR     Choose directory to save the logs
+  --image_size IMAGE_SIZE
+                        resize image size
+  --batch_size BATCH_SIZE
+                        batch size
+  --epochs EPOCHS
+  --depth DEPTH         Number of downsampling/upsampling blocks
+  --n_classes N_CLASSES
+                        Number of classes in the dataset
+  --up_mode {upconv, upsample}
+                        Type of upsampling
+  --augment {yes, no}   Whether to augment the train images or not
+  --augment_type {geometric, image, both}
+                        Which type of augmentation to choose from: geometric,
+                        brightness or both
+  --transform_prob TRANSFORM_PROB
+                        Probability of images to augment when calling
+                        augmentations
+  --test_size TEST_SIZE
+                        Validation size to split the data, should be in
+                        between 0.0 to 1.0
+  --log {yes,no}        Log the Values
+  --build_graph {yes,no}
+                        Build the model graph
+                
+```
+
+
 #### Logging 
 To activate logging of the errors (:default is set as no)
 ```
@@ -86,11 +133,56 @@ To evaluate the model on the test data run:
 task.py root_dir(path/to/root directory) --mode evaluate
 ```
 
+Arguments that can be specified in the eval mode:
+```
+usage: evaluate.py [-h] [--main_dir MAIN_DIR] [--image_size IMAGE_SIZE]
+                   [--weights_dir WEIGHTS_DIR]
+
+Script for evaluating the trained model
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --main_dir MAIN_DIR   main directory
+  --image_size IMAGE_SIZE
+                        resize image size to match train image size
+  --weights_dir WEIGHTS_DIR
+                        Choose directory to save weights model
+```
+
+
 ### 3. Interpret Mode
 To visualize the intermediate layers:
 ```
 task.py root_dir(path/to/root directory) --mode interpret
 ```
+
+Arguments that can be specified in the interpret mode:
+```
+usage: interpret.py [-h] [--main_dir MAIN_DIR]
+                    [--interpret_path INTERPRET_PATH]
+                    [--weights_dir WEIGHTS_DIR] [--image_size IMAGE_SIZE]
+                    [--depth DEPTH]
+                    [--plot_interpret {sensitivity,block_filters}]
+                    [--plot_size PLOT_SIZE]
+
+Script for interpreting the trained model results
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --main_dir MAIN_DIR   main directory
+  --interpret_path INTERPRET_PATH
+                        Choose directory to save layer visualizations
+  --weights_dir WEIGHTS_DIR
+                        Choose directory to load weights from
+  --image_size IMAGE_SIZE
+                        resize image size
+  --depth DEPTH         Number of downsampling/upsampling blocks
+  --plot_interpret {sensitivity,block_filters}
+                        Type of interpret to plot
+  --plot_size PLOT_SIZE
+                        Image size of sensitivity analysis
+```
+
 
 #### Sensitivity Analysis
 Is the default option when you run interpret mode
@@ -105,21 +197,25 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 
 
 ## Keep an eye out :eyes: for Upcoming Updates [![](https://img.shields.io/github/watchers/mukeshmithrakumar/U-Net.svg?label=Watch&style=social)](https://github.com/mukeshmithrakumar/U-Net/watchers)
+- write performance.py to measure code performance and optimize code
 - work on the hyperparamters.py to tune hyper parameters
-- check on config.py
+- write config.py
 - add multi gpu capabilities
-- work on a biomedical image pre-processing script
 - write unit_test.py for the above
 - add code coverage to check tests and iterate
+- Deploy pre alpha PyPI package
+- work on a biomedical image pre-processing script
 - modify the unet to work on MRI data
 - test on the CHAOS Segmentation challenge
 - modify the unet to work on CT scan
 - test on the PAVES Segmentation challenge
+- write unit_test.py for the above
 - write a neural architecture search script
 - Build a classifier to identify between the organs (One U-Net to segment different organs) 
 - Build another separate classifier to identify different cells
-- Build the PyPI package
-- Write a demo in colab
-- Build a graphical user interface that for u-net
+- Deploy alpha PyPI package
+- Build a graphical user interface for radnet
+- Build a developer and researcher mode for the GUI
 - Abstract away the deep learning stuff so its not python/deep learning friendly but more like doctor friendly
 - Build into a software package
+- Deploy beta PyPI package
