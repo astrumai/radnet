@@ -92,12 +92,12 @@ def load_data(args):
     train_data = Compose([Resize(args.image_size), ToTensor()])
 
     # choose between augmentations for train data
-    if args.augment == 'yes':
+    if args.augment:
         train_augment = augmentations(args)
         train_transform = DataTransformer(data_path, labels_path, image_transform=train_data,
                                           image_augmentation=train_augment)
 
-    elif args.augment == 'no':
+    else:
         # transforming the train data and returning a 4D tensor
         train_transform = DataTransformer(data_path, labels_path, image_transform=train_data, image_augmentation=None)
 

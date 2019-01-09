@@ -32,8 +32,8 @@ threshold_value = 0.5
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Script for training the model')
 
-    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\UNet\\", help='main directory')
-    parser.add_argument('--resume', default='no', choices=['yes', 'no'], type=str,
+    parser.add_argument('--main_dir', default="C:\\Users\\Mukesh\\Segmentation\\radnet\\", help='main directory')
+    parser.add_argument('--resume', action='store_true', default=False,
                         help='Choose to start training from checkpoint')
     parser.add_argument('--weights_dir', default="./weights", type=str, help='Choose directory to save weights model')
     parser.add_argument('--log_dir', default="./train_logs", type=str, help='Choose directory to save the logs')
@@ -44,7 +44,7 @@ def parse_args(args):
     parser.add_argument('--n_classes', default=1, type=int, help='Number of classes in the dataset')
     parser.add_argument('--up_mode', default='upsample', choices=['upconv, upsample'], type=str,
                         help='Type of upsampling')
-    parser.add_argument('--augment', default='yes', choices=['yes, no'], type=str,
+    parser.add_argument('--augment', action='store_true', default=False,
                         help='Whether to augment the train images or not')
     parser.add_argument('--augment_type', default='geometric', choices=['geometric, image, both'], type=str,
                         help='Which type of augmentation to choose from: geometric, brightness or both')
@@ -52,8 +52,8 @@ def parse_args(args):
                         help='Probability of images to augment when calling augmentations')
     parser.add_argument('--test_size', default=0.2, type=int,
                         help='Validation size to split the data, should be in between 0.0 to 1.0')
-    parser.add_argument('--log', default='no', choices=['yes', 'no'], type=str, help='Log the Values')
-    parser.add_argument('--build_graph', default='no', choices=['yes', 'no'], type=str, help='Build the model graph')
+    parser.add_argument('--log', action='store_true', default=False, help='Log the Values')
+    parser.add_argument('--build_graph', action='store_true', default=False, help='Build the model graph')
 
     return parser.parse_args(args)
 
@@ -131,7 +131,7 @@ def training_loop(train_loader, model, optim, val_loader, args):
             print("===> Epoch {} Validation Loss: {:.4f} : Mean Dice: {:.4f} :".format(e, val_loss, val_dice))
 
         # log train history
-        if args.log == 'yes':
+        if args.log:
             logger = Logger(args.log_dir)
             plotter(log=logger, train_loss=train_loss, train_dice=train_dice, val_loss=val_loss, val_dice=val_dice,
                     step=e, model=model)
@@ -174,13 +174,13 @@ def main(args=None):
     print("Training Done!")
 
     # if you specify logging, provides info to access the logs and visualize using tensorboard
-    if args.log == 'yes':
+    if args.log:
         print("\nTo view the logs run tensorboard in your command line from the trainer folder"
               ": tensorboard --logdir=train_logs/ --port=6006"
               "\nYou can view the results at:  http://localhost:6006")
 
     # build the pytorch model static graph
-    if args.build_graph == 'yes':
+    if args.build_graph:
         graph = graph_summary(prediction.mean(), params=dict(model.named_parameters()))
         graph.format = 'png'
         graph.render('u_net_model')

@@ -86,7 +86,7 @@ def load_model(args):
 
 def resume_training(args):
     """Function to be added in for future."""
-    if args.resume == 'yes':
+    if args.resume:
         filename = os.path.join(args.weights_dir, "./unet_model.pt")
         if os.path.isfile(filename):
             print("===> loading checkpoint '{}' ".format(filename))
