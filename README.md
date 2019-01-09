@@ -63,21 +63,21 @@ task.py root_dir(path/to/root directory)
 
 Arguments that can be specified in the training mode:
 ```
-usage: train.py [-h] [--main_dir MAIN_DIR] [--resume {yes,no}]
+usage: train.py [-h] [--main_dir MAIN_DIR] [--resume]
                 [--weights_dir WEIGHTS_DIR] [--log_dir LOG_DIR]
                 [--image_size IMAGE_SIZE] [--batch_size BATCH_SIZE]
                 [--epochs EPOCHS] [--depth DEPTH] [--n_classes N_CLASSES]
-                [--up_mode {upconv, upsample}] [--augment {yes, no}]
+                [--up_mode {upconv, upsample}] [--augment]
                 [--augment_type {geometric, image, both}]
                 [--transform_prob TRANSFORM_PROB] [--test_size TEST_SIZE]
-                [--log {yes,no}] [--build_graph {yes,no}]
+                [--log] [--build_graph]
 
 Script for training the model
 
 optional arguments:
   -h, --help            show this help message and exit
   --main_dir MAIN_DIR   main directory
-  --resume {yes,no}     Choose to start training from checkpoint
+  --resume              Choose to start training from checkpoint
   --weights_dir WEIGHTS_DIR
                         Choose directory to save weights model
   --log_dir LOG_DIR     Choose directory to save the logs
@@ -91,7 +91,7 @@ optional arguments:
                         Number of classes in the dataset
   --up_mode {upconv, upsample}
                         Type of upsampling
-  --augment {yes, no}   Whether to augment the train images or not
+  --augment             Whether to augment the train images or not
   --augment_type {geometric, image, both}
                         Which type of augmentation to choose from: geometric,
                         brightness or both
@@ -101,10 +101,8 @@ optional arguments:
   --test_size TEST_SIZE
                         Validation size to split the data, should be in
                         between 0.0 to 1.0
-  --log {yes,no}        Log the Values
-  --build_graph {yes,no}
-                        Build the model graph
-                
+  --log                 Log the Values
+  --build_graph         Build the model graph
 ```
 
 
