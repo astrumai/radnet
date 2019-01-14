@@ -61,6 +61,7 @@ current release features and see [Upcoming Releases](#octocat-upcoming-releases)
 
 If this repository helps you in anyway, show your love :heart: by putting a :star: on this project :v:
 
+**Please Note** that since this is a developer release content is being constantly developed and till I test everything completely I won't be committing updates into the repo so if you run into any issues, please reach out. The best way to prevent this is to use the released source for developing.
 
 <h2 align="center">:clipboard: Getting Started</h2>
 
@@ -132,7 +133,7 @@ Runs on a NVIDIA GeForce GTX 1050 Ti with 4 GB GDDR5 Frame Buffer and 768 NVIDIA
 </details>
 
 ### :wrench: Install
-
+Currently you can clone the repo and start building, mean while, am working on the PyPi release, so will be updated
 
 
 <h2 align="center">:hourglass: Train</h2>
@@ -141,19 +142,61 @@ Runs on a NVIDIA GeForce GTX 1050 Ti with 4 GB GDDR5 Frame Buffer and 768 NVIDIA
 Train the model by running:
 
 ```
-task.py root_dir(path/to/root directory)
+train.py root_dir(path/to/root directory)
 ```
 
 Arguments that can be specified in the training mode:
 ```
+usage: train.py [-h] [--main_dir MAIN_DIR] [--resume] [-v]
+                [--weights_dir WEIGHTS_DIR] [--log_dir LOG_DIR]
+                [--image_size IMAGE_SIZE] [--batch_size BATCH_SIZE]
+                [-e EPOCHS] [-d DEPTH] [--n_classes N_CLASSES]
+                [--up_mode {upconv, upsample}] [--augment]
+                [--augment_type {geometric, image, both}]
+                [--transform_prob TRANSFORM_PROB] [--test_size TEST_SIZE]
+                [--log] [-bg]
 
+Script for training the model
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --main_dir MAIN_DIR   main directory
+  --resume              Choose to start training from checkpoint
+  -v, --verbose         Choose to set verbose to False
+  --weights_dir WEIGHTS_DIR
+                        Choose directory to save weights model
+  --log_dir LOG_DIR     Choose directory to save the logs
+  --image_size IMAGE_SIZE
+                        resize image size
+  --batch_size BATCH_SIZE
+                        batch size
+  -e EPOCHS, --epochs EPOCHS
+                        Number of training epochs
+  -d DEPTH, --depth DEPTH
+                        Number of downsampling/upsampling blocks
+  --n_classes N_CLASSES
+                        Number of classes in the dataset
+  --up_mode {upconv, upsample}
+                        Type of upsampling
+  --augment             Whether to augment the train images or not
+  --augment_type {geometric, image, both}
+                        Which type of augmentation to choose from: geometric,
+                        brightness or both
+  --transform_prob TRANSFORM_PROB
+                        Probability of images to augment when calling
+                        augmentations
+  --test_size TEST_SIZE
+                        Validation size to split the data, should be in
+                        between 0.0 to 1.0
+  --log                 Log the Values
+  -bg, --build_graph    Build the model graph
 ```
 
 #### :clipboard: Logging
 To activate logging of the errors (:default is set as no)
 
 ```
-task.py root_dir(path/to/root directory) --log yes
+train.py root_dir(path/to/root directory) --log
 ```
 
 To see the log in tensorboard follow the log statement after training:
@@ -166,7 +209,7 @@ Since Pytorch graphs are dynamic I couldn't yet integrate it with tensorflow but
 to build a png version of the model architecture (:default is set as no)
 
 ```
-task.py root_dir(path/to/root directory) --build_graph yes
+train.py root_dir(path/to/root directory) --bg
 ```
 
 <details>
@@ -181,13 +224,24 @@ task.py root_dir(path/to/root directory) --build_graph yes
 Evaluate the model on the test data by running:
 
 ```
-task.py root_dir(path/to/root directory) --mode evaluate
+evaluate.py root_dir(path/to/root directory)
 ```
 
 Arguments that can be specified in the evaluation mode:
 
 ```
+usage: evaluate.py [-h] [--main_dir MAIN_DIR] [--image_size IMAGE_SIZE]
+                   [--weights_dir WEIGHTS_DIR]
 
+Script for evaluating the trained model
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --main_dir MAIN_DIR   main directory
+  --image_size IMAGE_SIZE
+                        resize image size to match train image size
+  --weights_dir WEIGHTS_DIR
+                        Choose directory to save weights model
 ```
 
 
@@ -197,24 +251,51 @@ Arguments that can be specified in the evaluation mode:
 Visualize the intermediate layers by running:
 
 ```
-task.py root_dir(path/to/root directory) --mode interpret
+interpret.py root_dir(path/to/root directory) 
 ```
 
 Arguments that can be specified in the interpret mode:
 
 ```
+usage: interpret.py [-h] [--main_dir MAIN_DIR]
+                    [--interpret_path INTERPRET_PATH]
+                    [--weights_dir WEIGHTS_DIR] [--image_size IMAGE_SIZE]
+                    [--depth DEPTH]
+                    [--plot_interpret {sensitivity,block_filters}]
+                    [--plot_size PLOT_SIZE]
 
+Script for interpreting the trained model results
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --main_dir MAIN_DIR   main directory
+  --interpret_path INTERPRET_PATH
+                        Choose directory to save layer visualizations
+  --weights_dir WEIGHTS_DIR
+                        Choose directory to load weights from
+  --image_size IMAGE_SIZE
+                        resize image size
+  --depth DEPTH         Number of downsampling/upsampling blocks
+  --plot_interpret {sensitivity,block_filters}
+                        Type of interpret to plot
+  --plot_size PLOT_SIZE
+                        Image size of sensitivity analysis
 ```
 
 #### :nut_and_bolt: Sensitivity Analysis
-Is the default option when you run interpret mode
+To do sensitivity analysis run:
+
+```
+interpret.py root_dir(path/to/root directory) --plot_interpret sensitivity
+```
+
 <p align="center"><img src="logo/sensitivity.png" /></p>
 
 #### :nut_and_bolt: Block Analysis
-To visualize the weight output of each downsampling block run:
+To visualize the weight output of each up/down sampling block run:
 
 ```
-task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block_filters
+interpret.py root_dir(path/to/root directory) --plot_interpret block_filters
 ```
 
 <p align="center"><img width="80%" src="logo/filters.gif" /></p>
@@ -222,7 +303,7 @@ task.py root_dir(path/to/root directory) --mode interpret --plot_interpret block
 
 <h2 align="center">:chart_with_upwards_trend: Performance</h2>
 <p align="right"><a href="#radnet"><sup>▴ Back to top</sup></a></p>
-
+(Work in Progress)
 
 
 
