@@ -289,7 +289,7 @@ To do sensitivity analysis run:
 interpret.py root_dir(path/to/root directory) --plot_interpret sensitivity
 ```
 
-<p align="center"><img src="logo/sensitivity.png" /></p>
+<p align="center"><img src="logo/sensitivity2.png" /></p>
 
 #### :nut_and_bolt: Block Analysis
 To visualize the weight output of each up/down sampling block run:
