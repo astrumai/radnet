@@ -17,6 +17,9 @@
     <a href="https://travis-ci.com/adhiraiyan/radnet">
         <img src="https://travis-ci.com/adhiraiyan/radnet.svg?branch=master" alt="Build Status">
     </a>
+    <a href="https://circleci.com/gh/adhiraiyan/radnet">
+        <img src="https://circleci.com/gh/adhiraiyan/radnet.svg?style=svg" alt="CircleCI">
+    </a>
     <a href="https://github.com/adhiraiyan/radnet/releases">
         <img src="https://img.shields.io/github/release-pre/adhiraiyan/radnet.svg?colorB=yellow" alt="GitHub Releases">
     </a>
@@ -26,9 +29,6 @@
     <a href="https://github.com/adhiraiyan/radnet/stargazers">
         <img src="https://img.shields.io/github/stars/adhiraiyan/radnet.svg?colorA=orange&colorB=orange&logo=github"
             alt="GitHub Stars">
-    </a>
-    <a href="http://hits.dwyl.io/adhiraiyan/radnet">
-        <img src="http://hits.dwyl.io/adhiraiyan/radnet.svg?" alt="HitCount">
     </a>
     <a href="https://www.linkedin.com/in/mukesh-mithrakumar/">
         <img src="https://img.shields.io/badge/LinkedIn-blue.svg?logo=#0077B5" alt="LinkedIn">
