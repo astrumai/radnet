@@ -25,8 +25,7 @@ install:
 script:
   - python setup.py sdist
   - flake8 --max-line-length=120 --ignore=E402, E251, E221, W291, F401, W391, W293
-  - pytest
-  - pytest-cov
+  - coverage run --source pytorch_unet -m pytest
 
 after_success:
   - coveralls
