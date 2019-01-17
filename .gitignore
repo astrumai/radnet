@@ -168,7 +168,10 @@ $RECYCLE.BIN/
 data
 .idea
 .vscode
-visualize
-train_logs
+pytorch_unet/trainer/visualize
+pytorch_unet/trainer/train_logs
+pytorch_unet/trainer/weights
 weights
 *.ipynb
+.vs 
+

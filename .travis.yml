@@ -17,6 +17,9 @@ install:
   - pip install 'torchvision'
   - pip install 'pytest'
   - pip install 'flake8'
+  - pip install 'cython'
+  - pip install 'psutil'
+
 
 script:
   - python setup.py sdist

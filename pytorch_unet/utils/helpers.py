@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -60,16 +62,18 @@ def plot_output(prediction):
     plt.show()
 
 
-def save_model(model, path, epoch, optimizer, best, loss):
+def save_model(model, path, epoch, optimizer, best, loss, verbose):
     """Saves the model, optimizer, epochs and the best loss."""
     if best:
-        print("===> Saving a new best model at epoch {}".format(epoch))
         save_checkpoint = ({'model': model,
                             'optimizer': optimizer,
                             'epoch': epoch,
                             'best_loss': loss
                             }, best)
         torch.save(save_checkpoint, path + "/unet_model.pt")
+
+        if verbose:
+            print("*** Saving a new best model at epoch {} ***\n".format(epoch))
 
 
 def load_model(args):
@@ -112,3 +116,102 @@ def load_image(img_path, args):
     img_transform = Compose([Resize(args.image_size), ToTensor()])
     img_tensor = img_transform(img)
     return img_tensor, img
+
+
+def timeit_decor(function, *args, **kwargs):
+    """Decorator function to print exectution time of the decorated function.
+    Usage:
+        @timeit_decor on top of the function
+    
+    :param func: [description]
+    :return: [description]
+    """
+
+    def timer(*args, **kwargs):
+        t1 = time.time()
+        result = function(*args, **kwargs)
+        t2 = time.time()
+        print("-- executed %s in %.4f seconds" % (function.__name__, (t2 - t1)))
+        return result
+
+    return timer
+
+
+def elapsed_since(start):
+    """Helper to calculate the elapsed time in ms, s, min or hrs.
+    
+    :param start (sec)      : starting time
+    :return                 : elapsed time in ms, s, min or hrs
+    """
+
+    elapsed = time.time() - start
+    if elapsed < 1:
+        return str(round(elapsed * 1000, 2)) + 'ms'
+    if elapsed < 60:
+        return str(round(elapsed, 2)) + 's'
+    if elapsed < 3600:
+        return str(round(elapsed / 60, 2)) + 'min'
+    else:
+        return str(round(elapsed / 3600, 2)) + 'hrs'
+
+
+def format_bytes(bytes):
+    """Helper to convert bytes into respective formats.
+    
+    :param bytes(byte)  : Bytes to formate
+    :return (byte)      : formatted bytes
+    """
+
+    if abs(bytes) < 1000:
+        return str(bytes) + 'B'
+    elif abs(bytes) < 1e6:
+        return str(round(bytes / 1e3, 2)) + 'kB'
+    elif abs(bytes) < 1e9:
+        return str(round(bytes / 1e6, 2)) + 'MB'
+    else:
+        return str(round(bytes / 1e9, 2)) + 'GB'
+
+
+def _find_script(script_name):
+    """ Find the script.
+    If the input is not a file, then $PATH will be searched.
+    """
+    if os.path.isfile(script_name):
+        return script_name
+    path = os.getenv('PATH', os.defpath).split(os.pathsep)
+    for folder in path:
+        if not folder:
+            continue
+        fn = os.path.join(folder, script_name)
+        if os.path.isfile(fn):
+            return fn
+
+    sys.stderr.write('Could not find script {0}\n'.format(script_name))
+    raise SystemExit(1)
+
+# import pickle, gc, os, signal, threading, time, tracemalloc
+
+# class TakeSnapshot(threading.Thread):
+#     daemon = True
+
+#     def run(self):
+#         if hasattr(signal, 'pthread_sigmask'):
+#             # Available on UNIX with Python 3.3+
+#             signal.pthread_sigmask(signal.SIG_BLOCK, range(1, signal.NSIG))
+#         counter = 1
+#         while True:
+#             time.sleep(60)
+#             filename = ("/tmp/tracemalloc-%d-%04d.pickle"
+#                         % (os.getpid(), counter))
+#             print("Write snapshot into %s..." % filename)
+#             gc.collect()
+#             snapshot = tracemalloc.take_snapshot()
+#             with open(filename, "wb") as fp:
+#                 pickle.dump(snapshot, fp, 2)
+#             snapshot = None
+#             print("Snapshot written into %s" % filename)
+#             counter += 1
+
+# save 25 frames
+# tracemalloc.start(25)
+# TakeSnapshot().start()
