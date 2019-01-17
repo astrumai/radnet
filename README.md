@@ -208,7 +208,7 @@ Since Pytorch graphs are dynamic I couldn't yet integrate it with tensorflow but
 to build a png version of the model architecture (:default is set as no)
 
 ```
-train.py root_dir(path/to/root directory) --bg
+train.py root_dir(path/to/root directory) -bg
 ```
 
 <details>
