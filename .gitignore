@@ -174,4 +174,5 @@ pytorch_unet/trainer/weights
 weights
 *.ipynb
 .vs 
+.dmp 
 
