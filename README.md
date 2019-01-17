@@ -17,14 +17,13 @@
     <a href="https://travis-ci.com/adhiraiyan/radnet">
         <img src="https://travis-ci.com/adhiraiyan/radnet.svg?branch=master" alt="Build Status">
     </a>
-    <a href="https://circleci.com/gh/adhiraiyan/radnet">
-        <img src="https://circleci.com/gh/adhiraiyan/radnet.svg?style=svg" alt="CircleCI">
-    </a>
-    <a href="https://github.com/adhiraiyan/radnet/releases">
-        <img src="https://img.shields.io/github/release-pre/adhiraiyan/radnet.svg?colorB=yellow" alt="GitHub Releases">
+    <a class="badge-align" href="https://www.codacy.com/app/mukesh_4/radnet?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adhiraiyan/radnet&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/ce72043e7169445a808463d2ff364854" alt="Code Quality">
     </a>
     <a href="https://coveralls.io/github/adhiraiyan/radnet?branch=master">
         <img src="https://coveralls.io/repos/github/adhiraiyan/radnet/badge.svg?branch=master" alt="Coverage Status">
+    </a>
+    <a href="https://github.com/adhiraiyan/radnet/releases">
+        <img src="https://img.shields.io/github/release-pre/adhiraiyan/radnet.svg?colorB=yellow" alt="GitHub Releases">
     </a>
     <a href="https://github.com/adhiraiyan/radnet/stargazers">
         <img src="https://img.shields.io/github/stars/adhiraiyan/radnet.svg?colorA=orange&colorB=orange&logo=github"
