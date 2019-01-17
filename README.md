@@ -48,7 +48,7 @@
     <a href="" target="_blank">Blog</a>
 </p>
 
-<h6 align="center">Made by Mukesh Mithrakumar • :milky_way: <a href="https://mukeshmithrakumar.com">https://mukeshmithrakumar.com</a></h6>
+<h6 align="center"><> with :hearts: by Mukesh Mithrakumar • :milky_way: <a href="https://mukeshmithrakumar.com">https://mukeshmithrakumar.com</a></h6>
 
 
 <h2 align="center">What is it :question:</h2>
@@ -376,3 +376,5 @@ above
 <p align="right"><a href="#radnet"><sup>▴ Back to top</sup></a></p>
 
 - For any questions and collaborations you can reach me via [LinkedIn](https://www.linkedin.com/in/mukesh-mithrakumar/)
+
+<div class="LI-profile-badge"  data-version="v1" data-size="medium" data-locale="en_US" data-type="horizontal" data-theme="dark" data-vanity="mukesh-mithrakumar"><a class="LI-simple-link" href='https://www.linkedin.com/in/mukesh-mithrakumar?trk=profile-badge'>Mukesh Mithrakumar</a></div>
