@@ -170,12 +170,11 @@ data
 .vscode
 weights
 *.ipynb
-.vs 
+.vs
 .dmp
- 
+.vscode
+
 pytorch_unet/trainer/visualize
 pytorch_unet/trainer/train_logs
 pytorch_unet/trainer/weights
 pytorch_unet/utils/prototemp.py
-
-

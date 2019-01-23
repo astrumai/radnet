@@ -14,6 +14,7 @@
     <a href="https://www.python.org/downloads/release/python-360/">
         <img src="https://img.shields.io/badge/Python-3.6-blue.svg" alt="Python 3.6">
     </a>
+    <a><img src="https://img.shields.io/badge/Status-Work_In_Progress-yellow.svg" alt="WorkInProgress"></a>
     <a href="https://travis-ci.com/adhiraiyan/radnet">
         <img src="https://travis-ci.com/adhiraiyan/radnet.svg?branch=master" alt="Build Status">
     </a>
@@ -87,7 +88,7 @@ If this repository helps you in anyway, show your love :heart: by putting a :sta
     - pip install 'cython'
     - pip install 'psutil'
     ```
-    
+
 </details>
 
 ### :computer: Hardware Prerequisites:
@@ -250,7 +251,7 @@ optional arguments:
 Visualize the intermediate layers by running:
 
 ```
-interpret.py root_dir(path/to/root directory) 
+interpret.py root_dir(path/to/root directory)
 ```
 
 Arguments that can be specified in the interpret mode:
